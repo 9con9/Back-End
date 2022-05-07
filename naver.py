@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import re
 from selenium import webdriver
 import time
+import chromedriver_autoinstaller
 
 def get_naver(keyword):
     # 이모티콘 제거하기
@@ -17,7 +18,7 @@ def get_naver(keyword):
     url = "https://m.joongna.com/search-list/product?searchword=" + keyword
 
     # 셀레니움
-    driver = webdriver.Chrome('chromedriver.exe')
+    driver = webdriver.Chrome(chromedriver_autoinstaller.install())
     driver.implicitly_wait(time_to_wait=5)
     # 중고나라 접속
     driver.get(url)
@@ -50,7 +51,7 @@ def get_naver(keyword):
             img_link.append(driver.find_elements_by_xpath('//*[@id="root"]/div[1]/section/article/div/div[' + str(i) + ']/div/div/a')[0].get_attribute("href"))
 
     # DB 연결하기
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="1234", db="condb", charset="utf8")
+    conn = pymysql.connect(host="127.0.0.1", user="root", password="!mlpko159487", db="condb", charset="utf8")
 
     # DB 커서 만들기
     cursor = conn.cursor(pymysql.cursors.DictCursor)

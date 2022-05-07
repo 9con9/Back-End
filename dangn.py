@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import re
 from selenium import webdriver
 import time
+import chromedriver_autoinstaller
 
 
 
@@ -22,7 +23,7 @@ def get_dangn(keyword):
     name, address, price, link, img_link = [], [], [], [], []
 
     # 셀레니움
-    driver = webdriver.Chrome('chromedriver.exe')
+    driver = webdriver.Chrome(chromedriver_autoinstaller.install())
     driver.implicitly_wait(time_to_wait=5)
     driver.get(url)
     page = driver.page_source
@@ -42,7 +43,7 @@ def get_dangn(keyword):
         img_link.append(driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[1]/img")[0].get_attribute("src"))
 
     # DB 연결하기
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="1234", db="condb", charset="utf8")
+    conn = pymysql.connect(host="127.0.0.1", user="root", password="!mlpko159487", db="condb", charset="utf8")
 
     # DB 커서 만들기
     cursor = conn.cursor(pymysql.cursors.DictCursor)
