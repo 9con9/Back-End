@@ -49,7 +49,7 @@ def get_bunjang(search_keyword):
                     for time in time_div:
                         upload_time_list.append(time.get_text())
 
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="!mlpko159487", db="condb", charset="utf8")
+    conn = pymysql.connect(host="127.0.0.1", user="root", password="1234", db="condb", charset="utf8")
 
     cursor = conn.cursor(pymysql.cursors.DictCursor)
 
