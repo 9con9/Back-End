@@ -51,10 +51,16 @@ def get_naver(keyword):
             img_link.append(driver.find_elements_by_xpath('//*[@id="root"]/div[1]/section/article/div/div[' + str(i) + ']/div/div/a')[0].get_attribute("href"))
 
     # DB 연결하기
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="1234", db="condb", charset="utf8")
+    conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
 
     # DB 커서 만들기
     cursor = conn.cursor(pymysql.cursors.DictCursor)
+    
+    cursor.execute('SET NAMES utf8mb4')
+    cursor.execute("SET CHARACTER SET utf8mb4")
+    cursor.execute("SET character_set_connection=utf8mb4")
+    
+    cursor.execute("TRUNCATE condb.naver_usersells")
 
     # sql 문
     sql = "INSERT INTO condb.naver_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
@@ -64,5 +70,3 @@ def get_naver(keyword):
        cursor.execute(sql, (i+1, '중고 나라', pattern.sub(r"",name[i]), upload_time[i], str(address[i]), price[i], str(link[i]), img_link[i]))
 
     conn.commit()
-
-
