@@ -49,9 +49,15 @@ def get_bunjang(search_keyword):
                     for time in time_div:
                         upload_time_list.append(time.get_text())
 
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="1234", db="condb", charset="utf8")
+    conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
 
     cursor = conn.cursor(pymysql.cursors.DictCursor)
+    
+    cursor.execute("TRUNCATE condb.bunjang_usersells")
+    
+    cursor.execute('SET NAMES utf8mb4')
+    cursor.execute("SET CHARACTER SET utf8mb4")
+    cursor.execute("SET character_set_connection=utf8mb4")
 
     sql = "INSERT INTO condb.bunjang_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
 
