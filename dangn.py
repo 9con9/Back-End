@@ -8,8 +8,6 @@ import chromedriver_autoinstaller
 
 
 
-
-
 def get_dangn(keyword):
     # 이모티콘 제거하기
     pattern = re.compile("["
@@ -22,8 +20,14 @@ def get_dangn(keyword):
     # 변수 초기화
     name, address, price, link, img_link = [], [], [], [], []
 
+    # 옵션 생성
+    options = webdriver.ChromeOptions()
+    # 창 숨기는 옵션 추가
+    options.add_argument("headless")
+
     # 셀레니움
-    driver = webdriver.Chrome(chromedriver_autoinstaller.install())
+
+    driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
     driver.implicitly_wait(time_to_wait=5)
     driver.get(url)
     page = driver.page_source
@@ -43,6 +47,7 @@ def get_dangn(keyword):
         img_link.append(driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[1]/img")[0].get_attribute("src"))
 
     # DB 연결하기
+
     conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
 
     # DB 커서 만들기
@@ -54,6 +59,7 @@ def get_dangn(keyword):
     cursor.execute("SET CHARACTER SET utf8mb4")
     cursor.execute("SET character_set_connection=utf8mb4")
     
+
     # sql 문
     sql = "INSERT INTO condb.UserSells VALUES(%s, %s, %s, %s, %s, %s, %s)"
 
@@ -62,4 +68,6 @@ def get_dangn(keyword):
         cursor.execute(sql,
                        (i + 1, '당근 마켓', pattern.sub(r"", name[i]), address[i], price[i], str(link[i]), img_link[i]))
 
+
     conn.commit()
+
