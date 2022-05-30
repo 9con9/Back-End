@@ -24,6 +24,7 @@ def get_dangn(keyword):
     options = webdriver.ChromeOptions()
     # 창 숨기는 옵션 추가
     options.add_argument("headless")
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
     # 셀레니움
 
@@ -61,12 +62,12 @@ def get_dangn(keyword):
     
 
     # sql 문
-    sql = "INSERT INTO condb.UserSells VALUES(%s, %s, %s, %s, %s, %s, %s)"
+    sql = "INSERT INTO condb.UserSells VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
 
     # db에 sql
     for i in range(len(name)):
         cursor.execute(sql,
-                       (i + 1, '당근 마켓', pattern.sub(r"", name[i]), address[i], price[i], str(link[i]), img_link[i]))
+                       (i + 1, '당근 마켓', pattern.sub(r"", name[i]), "null", address[i], price[i], str(link[i]), img_link[i]))
 
 
     conn.commit()
