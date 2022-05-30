@@ -1,14 +1,11 @@
 from ast import keyword
-from attr import attr
 import pymysql
 import requests
 from bs4 import BeautifulSoup
-import re
 from selenium import webdriver
-import time
 import chromedriver_autoinstaller
 
-categoly = {
+category = {
     "디지털기기": [600],
     "가구/인테리어": [810],
     "유아용품": [500],
@@ -24,13 +21,14 @@ def get_bunjang(search_keyword):
     
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
-
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
+    
     driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
     driver.implicitly_wait(3)
     
     name_list, upload_time_list, price_list, link_list, img_link_list, address_list = [], [], [], [], [], []
     
-    for key in categoly[search_keyword]:
+    for key in category[search_keyword]:
         driver.get('https://m.bunjang.co.kr/categories/' + str(key) + '?page=1' + "&req_ref=popular_category")
         
         html = driver.page_source
@@ -92,5 +90,3 @@ def get_bunjang(search_keyword):
        cursor.execute(sql, (i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), price_list[i], str(link_list[i]), img_link_list[i]))
 
     conn.commit()
-    
-get_bunjang('의류')

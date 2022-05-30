@@ -30,6 +30,7 @@ def get_dangn(keyword):
     options = webdriver.ChromeOptions()
     # 창 숨기는 옵션 추가
     options.add_argument("headless")
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
     driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
     driver.implicitly_wait(time_to_wait=5)
@@ -75,7 +76,7 @@ def get_dangn(keyword):
                     0].get_attribute("src"))
 
     # DB 연결하기
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="1234", db="condb", use_unicode=True)
+    conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
 
     # DB 커서 만들기
     cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -87,11 +88,11 @@ def get_dangn(keyword):
     cursor.execute("SET character_set_connection=utf8mb4")
 
     # sql 문
-    sql = "INSERT INTO condb.UserSells VALUES(%s, %s, %s, %s, %s, %s, %s)"
+    sql = "INSERT INTO condb.UserSells VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
 
     # db에 sql
     for i in range(len(name)):
         cursor.execute(sql,
-                       (i + 1, '당근 마켓', pattern.sub(r"", name[i]), address[i], price[i], str(link[i]), img_link[i]))
+                       (i + 1, '당근 마켓', pattern.sub(r"", name[i]), "null", address[i], price[i], str(link[i]), img_link[i]))
 
     conn.commit()

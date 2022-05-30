@@ -21,10 +21,11 @@ def get_naver(keyword):
     options = webdriver.ChromeOptions()
     # 창 숨기는 옵션 추가
     options.add_argument("headless")
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
     # 셀레니움
 
-    driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
+    driver = webdriver.Chrome(chromedriver_autoinstaller.install())#, options=options)
 
     driver.implicitly_wait(time_to_wait=5)
     # 중고나라 접속
@@ -76,7 +77,7 @@ def get_naver(keyword):
             ## 이미지주소 가져옴
 
     # DB 연결하기
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
+    conn = pymysql.connect(host="127.0.0.1", user="root", password="!mlpko159487", db="condb", use_unicode=True)
 
 
     # DB 커서 만들기
@@ -97,4 +98,3 @@ def get_naver(keyword):
 
 
     conn.commit()
-

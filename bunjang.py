@@ -5,7 +5,11 @@ import chromedriver_autoinstaller
 
 def get_bunjang(search_keyword):
 
-    driver = webdriver.Chrome(chromedriver_autoinstaller.install())
+    options = webdriver.ChromeOptions()
+    options.add_argument('headless')
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
+    
+    driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
     driver.implicitly_wait(3)
     driver.get('https://m.bunjang.co.kr/search/products?q=' + search_keyword + '&order=' + "date" + '&page=1')
 
