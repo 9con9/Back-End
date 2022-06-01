@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import chromedriver_autoinstaller
+import re
 
 category = {
     "디지털기기": [600],
@@ -57,7 +58,7 @@ def get_bunjang(search_keyword):
                         price_div = div.find_all(attrs={'class': 'sc-kxynE kwIxAx'})
                         
                         if len(price_div) == 0:
-                            price_list.append('null')
+                            price_list.append('0')
                         else:
                             for price in price_div:
                                 price_list.append(price.get_text())
@@ -87,6 +88,7 @@ def get_bunjang(search_keyword):
     sql = "INSERT INTO condb.bunjang_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
 
     for i in range(len(name_list)):
-       cursor.execute(sql, (i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), price_list[i], str(link_list[i]), img_link_list[i]))
+        prices = re.sub(r'[^0-9]', '', price_list[i])
+        cursor.execute(sql, (i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i]))
 
     conn.commit()
