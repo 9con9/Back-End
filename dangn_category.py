@@ -30,13 +30,15 @@ def get_dangn(keyword):
     options = webdriver.ChromeOptions()
     # 창 숨기는 옵션 추가
     options.add_argument("headless")
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
     driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
     driver.implicitly_wait(time_to_wait=5)
 
     # 변수 초기화
     end_number = 0
-    name, address, price, link, img_link = [], [], [], [], []
+    name, address, price, link, img_link, upload_time = [], [], [], [], [], []
+    print(end_number)
 
     for check in categoly:
         if keyword == check:
@@ -44,6 +46,10 @@ def get_dangn(keyword):
             break
     else:
         print("카테고리 찾지 못함")
+    link_start = 0
+    link_end = end_number - 1
+    print(link_start)
+    print(link_end)
 
     for key in categoly[keyword]:
         # 셀레니움
@@ -74,6 +80,24 @@ def get_dangn(keyword):
                 driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[1]/img")[
                     0].get_attribute("src"))
 
+        for i in range(link_start , link_end):
+            driver.get(link[i])
+            page = driver.page_source
+            soup = BeautifulSoup(page, "html.parser")
+            temp_upload_time = driver.find_elements_by_xpath('//*[@id="article-category"]/time')[0].text
+            if temp_upload_time[0:2] == "끌올":
+                upload_time.append(temp_upload_time[3:])
+            else:
+                upload_time.append(temp_upload_time)
+
+        link_start = link_end
+        link_end += (end_number - 1)
+
+        print("업로드 타임: ", upload_time)
+        print("이름들 : ", name)
+        print(link_start)
+        print(link_end)
+
     # DB 연결하기
     conn = pymysql.connect(host="127.0.0.1", user="root", password="1234", db="condb", use_unicode=True)
 
@@ -87,11 +111,12 @@ def get_dangn(keyword):
     cursor.execute("SET character_set_connection=utf8mb4")
 
     # sql 문
-    sql = "INSERT INTO condb.UserSells VALUES(%s, %s, %s, %s, %s, %s, %s)"
+    sql = "INSERT INTO condb.UserSells VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
 
     # db에 sql
     for i in range(len(name)):
         cursor.execute(sql,
-                       (i + 1, '당근 마켓', pattern.sub(r"", name[i]), address[i], price[i], str(link[i]), img_link[i]))
+                       (i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]), img_link[i]))
 
     conn.commit()
+get_dangn("디지털기기")

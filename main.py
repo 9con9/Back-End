@@ -2,8 +2,9 @@ import flask
 import dangn
 import naver
 import bunjang
-import dangn_categoly
-import naver_categoly
+import dangn_category
+import naver_category
+import bunjang_category
 from flask import Flask
 
 app = Flask(__name__)
@@ -16,14 +17,23 @@ def startParsing():
     keyword = str(keywords)
     print(keyword)
 
+    ###
+    spl = keyword.split()
+    list_spl = [k for k in spl]
+    naver_keyword_list = list_spl[1:]
+    naver_keyword = " ".join(naver_keyword_list)
+    print(naver_keyword)
+    ###
+
     for check in categoly:
         if keyword == check:
-            dangn_categoly.get_dangn(keyword)
-            naver_categoly.get_naver(keyword)
+            dangn_category.get_dangn(keyword)
+            naver_category.get_naver(keyword)
+            bunjang_category.get_bunjang(keyword)
             break
     else:
         dangn.get_dangn(keyword)
-        naver.get_naver(keyword)
+        naver.get_naver(naver_keyword)
         bunjang.get_bunjang(keyword)
     return "success"
 

@@ -41,6 +41,7 @@ def get_naver(keyword):
     options = webdriver.ChromeOptions()
     # 창 숨기는 옵션 추가
     options.add_argument("headless")
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
     # 셀레니움
     driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
@@ -127,4 +128,4 @@ def get_naver(keyword):
 
     conn.commit()
 
-
+get_naver("디지털기기")

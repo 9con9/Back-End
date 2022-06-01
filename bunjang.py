@@ -2,12 +2,17 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import pymysql
 import chromedriver_autoinstaller
+import re
 
 def get_bunjang(search_keyword):
 
-    driver = webdriver.Chrome(chromedriver_autoinstaller.install())
+    options = webdriver.ChromeOptions()
+    options.add_argument('headless')
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
+    
+    driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
     driver.implicitly_wait(3)
-    driver.get('https://m.bunjang.co.kr/search/products?q=' + search_keyword + '&order=' + "date" + '&page=1')
+    driver.get('https://m.bunjang.co.kr/search/products?q=' + search_keyword + '&order=' + "score" + '&page=1')
 
     html = driver.page_source
     soup = BeautifulSoup(html, 'html.parser')
@@ -37,8 +42,11 @@ def get_bunjang(search_keyword):
                     img_link_list.append(img)
 
                     price_div = div.find_all(attrs={'class': "sc-gmeYpB iBMbn"})
-                    for price in price_div:
-                        price_list.append(price.get_text())
+                    if len(price_div) == 0:
+                            price_list.append('0')
+                    else:
+                        for price in price_div:
+                            price_list.append(price.get_text())
                     name_div = div.find_all(attrs={'class': "sc-fcdeBU iVCsji"})
                     for name in name_div:
                         name_list.append(name.get_text())
@@ -62,6 +70,7 @@ def get_bunjang(search_keyword):
     sql = "INSERT INTO condb.bunjang_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
 
     for i in range(len(name_list)):
-       cursor.execute(sql, (i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), price_list[i], str(link_list[i]), img_link_list[i]))
+        prices = re.sub(r'[^0-9]', '', price_list[i])
+        cursor.execute(sql, (i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i]))
 
     conn.commit()
