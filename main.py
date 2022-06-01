@@ -17,6 +17,14 @@ def startParsing():
     keyword = str(keywords)
     print(keyword)
 
+    ###
+    spl = keyword.split()
+    list_spl = [k for k in spl]
+    naver_keyword_list = list_spl[1:]
+    naver_keyword = " ".join(naver_keyword_list)
+    print(naver_keyword)
+    ###
+
     for check in categoly:
         if keyword == check:
             dangn_category.get_dangn(keyword)
@@ -25,7 +33,7 @@ def startParsing():
             break
     else:
         dangn.get_dangn(keyword)
-        naver.get_naver(keyword)
+        naver.get_naver(naver_keyword)
         bunjang.get_bunjang(keyword)
     return "success"
 

@@ -77,7 +77,7 @@ def get_naver(keyword):
             ## 이미지주소 가져옴
 
     # DB 연결하기
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
+    conn = pymysql.connect(host="127.0.0.1", user="root", password="1234", db="condb", use_unicode=True)
 
 
     # DB 커서 만들기
@@ -96,5 +96,5 @@ def get_naver(keyword):
     for i in range(len(name)):
        cursor.execute(sql, (i+1, '중고 나라', pattern.sub(r"",name[i]), upload_time[i], str(address[i]), price[i], str(link[i]), img_link[i]))
 
-
     conn.commit()
+
