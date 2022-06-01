@@ -106,7 +106,8 @@ def get_naver(keyword):
                 ## 영상주소 가져옴
 
     # DB 연결하기
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="1234", db="condb", use_unicode=True)
+    conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
+
 
     # DB 커서 만들기
     cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -128,4 +129,3 @@ def get_naver(keyword):
 
     conn.commit()
 
-get_naver("디지털기기")

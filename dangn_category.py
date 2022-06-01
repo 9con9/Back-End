@@ -40,16 +40,19 @@ def get_dangn(keyword):
     name, address, price, link, img_link, upload_time = [], [], [], [], [], []
     print(end_number)
 
+
     for check in categoly:
         if keyword == check:
             end_number = int(50 // len(categoly[keyword]))
             break
     else:
         print("카테고리 찾지 못함")
+
     link_start = 0
     link_end = end_number - 1
     print(link_start)
     print(link_end)
+
 
     for key in categoly[keyword]:
         # 셀레니움
@@ -80,6 +83,7 @@ def get_dangn(keyword):
                 driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[1]/img")[
                     0].get_attribute("src"))
 
+
         for i in range(link_start , link_end):
             driver.get(link[i])
             page = driver.page_source
@@ -98,8 +102,10 @@ def get_dangn(keyword):
         print(link_start)
         print(link_end)
 
+
     # DB 연결하기
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="1234", db="condb", use_unicode=True)
+    conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
+
 
     # DB 커서 만들기
     cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -119,4 +125,5 @@ def get_dangn(keyword):
                        (i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]), img_link[i]))
 
     conn.commit()
-get_dangn("디지털기기")
+
+

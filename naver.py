@@ -96,7 +96,5 @@ def get_naver(keyword):
     for i in range(len(name)):
        cursor.execute(sql, (i+1, '중고 나라', pattern.sub(r"",name[i]), upload_time[i], str(address[i]), price[i], str(link[i]), img_link[i]))
 
-
     conn.commit()
 
-get_naver("아이패드 에어")
