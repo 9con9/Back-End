@@ -1,5 +1,6 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
+import re
 import pymysql
 import chromedriver_autoinstaller
 
@@ -50,7 +51,7 @@ def get_bunjang(search_keyword):
 
                         price_div = div.find_all(attrs={'class': "sc-gmeYpB iBMbn"})
                         if len(price_div) == 0:
-                            price_list.append('null')
+                            price_list.append('0')
                         else:
                             for price in price_div:
                                 price_list.append(price.get_text())
@@ -79,12 +80,14 @@ def get_bunjang(search_keyword):
         if first is True:
             for i in range(len(name_list)):
                 if (upload_time_list[i][1] != '주') and (upload_time_list[i][1] != '달') and (upload_time_list[i][2] != '달'):
-                    cursor.execute(sql, (i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), price_list[i], str(link_list[i]), img_link_list[i]))
+                    prices = re.sub(r'[^0-9]', '', price_list[i])
+                    cursor.execute(sql, (i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), prices, str(link_list[i]), img_link_list[i]))
                     temp_list.append(upload_time_list[i])
         else:
             for i in range(len(name_list)):
                 if (upload_time_list[i][1] != '주') and (upload_time_list[i][1] != '달') and (upload_time_list[i][2] != '달'):
-                    cursor.execute(sql, (len(temp_list)+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), price_list[i], str(link_list[i]), img_link_list[i]))
+                    prices = re.sub(r'[^0-9]', '', price_list[i])
+                    cursor.execute(sql, (len(temp_list)+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i]))
                     temp_list.append(upload_time_list[i])
         
         conn.commit()
