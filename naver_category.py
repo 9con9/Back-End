@@ -5,6 +5,7 @@ import re
 from selenium import webdriver
 import time
 import chromedriver_autoinstaller
+start = time.time()  # 시작 시간 저장
 
 categoly = {"디지털기기": [6, 7, 8, 9]
                 , "가구/인테리어": [10]
@@ -128,4 +129,4 @@ def get_naver(keyword):
         img_link[i]))
 
     conn.commit()
-
+    print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간

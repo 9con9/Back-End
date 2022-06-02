@@ -6,7 +6,7 @@ from selenium import webdriver
 import time
 import chromedriver_autoinstaller
 
-
+start = time.time()  # 시작 시간 저장
 def get_dangn(keyword):
     # 이모티콘 제거하기
     pattern = re.compile("["
@@ -36,7 +36,7 @@ def get_dangn(keyword):
     driver.find_element_by_xpath("//*[@id=\"result\"]/div[1]/div[2]/span").click()
     driver.implicitly_wait(time_to_wait=5)
 
-    for i in range(2, 31):
+    for i in range(2, 13):
         print(i)
 
         name.append(
@@ -88,6 +88,7 @@ def get_dangn(keyword):
                         img_link[i]))
 
     conn.commit()
+    print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
 
 
 get_dangn("천안 아이패드 에어")

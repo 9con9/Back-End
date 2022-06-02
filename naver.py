@@ -6,6 +6,8 @@ from selenium import webdriver
 import time
 import chromedriver_autoinstaller
 
+
+start = time.time()  # 시작 시간 저장
 def get_naver(keyword):
     # 이모티콘 제거하기
     pattern = re.compile("["
@@ -25,7 +27,7 @@ def get_naver(keyword):
 
     # 셀레니움
 
-    driver = webdriver.Chrome(chromedriver_autoinstaller.install())#, options=options)
+    driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
 
     driver.implicitly_wait(time_to_wait=5)
     # 중고나라 접속
@@ -38,7 +40,7 @@ def get_naver(keyword):
     time.sleep(1)
     driver.find_element_by_xpath('//*[@id="root"]/div[1]/section/article/button').click()
 
-    for i in range(2,30):
+    for i in range(2,12):
         print(i)
         temp = driver.find_elements_by_xpath(
             '//*[@id="root"]/div[1]/section/article/div/div[' + str(i) + ']/div/div/a/div/p[1]')[0].text
@@ -97,4 +99,6 @@ def get_naver(keyword):
        cursor.execute(sql, (i+1, '중고 나라', pattern.sub(r"",name[i]), upload_time[i], str(address[i]), price[i], str(link[i]), img_link[i]))
 
     conn.commit()
+    print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
 
+get_naver("아이패드 에어")
