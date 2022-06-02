@@ -137,7 +137,6 @@ def keyword_dangn(keyword, count):
     page = driver.page_source
     soup = BeautifulSoup(page, "html.parser")
     driver.find_element_by_xpath("//*[@id=\"result\"]/div[1]/div[2]/span").click()
-    driver.implicitly_wait(1)
     driver.find_element_by_xpath("//*[@id=\"result\"]/div[1]/div[2]/span").click()
 
     driver.implicitly_wait(time_to_wait=5)
@@ -173,7 +172,7 @@ def dangn_parsing(start, end, name, address, price, link, img_link, upload_time,
     print(plus)
     for i in range(plus+1):
         driver.find_element_by_xpath("//*[@id=\"result\"]/div[1]/div[2]/span").click()
-        sleep(1)
+
 
     for i in range(start, end):
         print(i)
