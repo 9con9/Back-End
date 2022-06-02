@@ -5,6 +5,7 @@ import re
 from selenium import webdriver
 import time
 import chromedriver_autoinstaller
+start = time.time()  # 시작 시간 저장
 
 
 categoly = {"디지털기기": ["스마트폰","태블릿", "스마트워치", "케이스", "케이블", "충전기", "이어폰", "프로젝터", "프린터", "pc", "데스크탑", "노트북", "카메라", "스피커", "티비", "냉장고"]
@@ -125,5 +126,6 @@ def get_dangn(keyword):
                        (i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]), img_link[i]))
 
     conn.commit()
+    print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
 
 
