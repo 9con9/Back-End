@@ -79,17 +79,24 @@ def get_bunjang(search_keyword):
         cursor.execute("SET CHARACTER SET utf8mb4")
         cursor.execute("SET character_set_connection=utf8mb4")
 
-        sql = "INSERT INTO condb.bunjang_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
+        sql = "INSERT INTO condb.bunjang_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
         
         temp_list = price_list
         np_temp = np.array(temp_list, dtype=np.int64)
         Q3, Q1 = np.percentile(np_temp, [75, 25])
-        IQR = Q3-Q1
-        np_temp = list(np_temp[(Q1 > np_temp)|(Q3+1.5*IQR < np_temp)])
+        IQR = Q1 - Q3
+        low_np = list(np_temp[Q1+0.2*IQR > np_temp])
+        high_np = list(np_temp[Q3-0.4*IQR < np_temp])
         
         for i in range(len(name_list)):
-            if (upload_time_list[i][1] != '주') and (upload_time_list[i][1] != '달') and (upload_time_list[i][2] != '달') and (int(price_list[i]) not in np_temp):
-                cursor.execute(sql, (count, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(price_list[i]), str(link_list[i]), img_link_list[i]))
-                count += 1
-                
+            if (upload_time_list[i][1] != '주') and (upload_time_list[i][1] != '달') and (upload_time_list[i][2] != '달'):
+                if int(price_list[i]) in low_np:
+                    cursor.execute(sql, (count, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(price_list[i]), str(link_list[i]), img_link_list[i], 'low'))
+                    count += 1
+                elif int(price_list[i]) in high_np:
+                    cursor.execute(sql, (count, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(price_list[i]), str(link_list[i]), img_link_list[i], 'high'))
+                    count += 1
+                else:
+                    cursor.execute(sql, (count, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(price_list[i]), str(link_list[i]), img_link_list[i], 'normal'))
+                    count += 1
         conn.commit()
