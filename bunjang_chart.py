@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re
 import pymysql
 import chromedriver_autoinstaller
+import numpy as np
 
 def get_bunjang(search_keyword):
 
@@ -15,6 +16,7 @@ def get_bunjang(search_keyword):
     
     first = True
     temp_list = []
+    count = 1
     
     for page in range(1, 3):
         if page != 1:
@@ -54,7 +56,8 @@ def get_bunjang(search_keyword):
                             price_list.append('0')
                         else:
                             for price in price_div:
-                                price_list.append(price.get_text())
+                                prices = re.sub(r'[^0-9]', '', price.get_text())
+                                price_list.append(prices)
                         name_div = div.find_all(attrs={'class': "sc-fcdeBU iVCsji"})
                         for name in name_div:
                             name_list.append(name.get_text())
@@ -77,17 +80,16 @@ def get_bunjang(search_keyword):
         cursor.execute("SET character_set_connection=utf8mb4")
 
         sql = "INSERT INTO condb.bunjang_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
-        if first is True:
-            for i in range(len(name_list)):
-                if (upload_time_list[i][1] != '주') and (upload_time_list[i][1] != '달') and (upload_time_list[i][2] != '달'):
-                    prices = re.sub(r'[^0-9]', '', price_list[i])
-                    cursor.execute(sql, (i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), prices, str(link_list[i]), img_link_list[i]))
-                    temp_list.append(upload_time_list[i])
-        else:
-            for i in range(len(name_list)):
-                if (upload_time_list[i][1] != '주') and (upload_time_list[i][1] != '달') and (upload_time_list[i][2] != '달'):
-                    prices = re.sub(r'[^0-9]', '', price_list[i])
-                    cursor.execute(sql, (len(temp_list)+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i]))
-                    temp_list.append(upload_time_list[i])
         
+        temp_list = price_list
+        np_temp = np.array(temp_list, dtype=np.int64)
+        Q3, Q1 = np.percentile(np_temp, [75, 25])
+        IQR = Q3-Q1
+        np_temp = list(np_temp[(Q1 > np_temp)|(Q3+1.5*IQR < np_temp)])
+        
+        for i in range(len(name_list)):
+            if (upload_time_list[i][1] != '주') and (upload_time_list[i][1] != '달') and (upload_time_list[i][2] != '달') and (int(price_list[i]) not in np_temp):
+                cursor.execute(sql, (count, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(price_list[i]), str(link_list[i]), img_link_list[i]))
+                count += 1
+                
         conn.commit()
