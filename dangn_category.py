@@ -7,17 +7,16 @@ import time
 import chromedriver_autoinstaller
 start = time.time()  # 시작 시간 저장
 
-
-categoly = {"디지털기기": ["스마트폰","태블릿", "스마트워치", "케이스", "케이블", "충전기", "이어폰", "프로젝터", "프린터", "pc", "데스크탑", "노트북", "카메라", "스피커", "티비", "냉장고"]
-               , "가구/인테리어": ["소품", "꽃", "수공예품",  "침실가구",  "거실가구",  "침구"]
-               , "유아용품": ["남아의류", "여아의류", "유아교육", "인형", "출산", "유아용품"]
-               , "스포츠/레저": ["골프", "캠핑", "낚시", "축구", "자전거", "스케이트", "킥보드", "테니스", "등산", "헬스", "요가", "야구", "볼링", "배드민턴", "탁구", "농구", "당구"]
-               , "의류" : ["패딩", "코트", "맨투맨", "후드티", "티셔츠", "블라우스", "셔츠", "바지", "청바지", "반바지", "치마", "원피스", "가디건", "니트", "자켓", "정장", "조끼", "트레이닝"]
+cccc = ["디지털기기", "가구/인테리어", "유아용품", "스포츠/레저", "의류", "도서/티켓/문구", "반려동물", "미용", "콘솔게임"]
+categoly = {"디지털기기": ["스마트폰","태블릿", "스마트워치", "충전기", "이어폰", "프로젝터", "컴퓨터", "노트북", "카메라", "티비", "케이블", "pc", "공유기", "셋톱박스", "아이패드"]
+               , "가구/인테리어": ["소품","가구", "침구", "인테리어", "책상"]
+               , "유아용품": ["아동복", "유아", "인형", "출산", "유아용품"]
+               , "스포츠/레저": ["골프", "자전거", "킥보드", "테니스", "헬스", "야구", "볼링", "배드민턴", "탁구", "농구", "당구", "등산", "트램펄린", "운동기구", "아령"]
+               , "의류": ["패딩", "코트", "맨투맨", "후드티", "셔츠", "바지", "치마", "원피스", "가디건", "니트", "블라우스", "양말", "슬렉스",  "통바지", "청바지"]
                , "도서/티켓/문구": ["도서", "문구", "기프티콘", "쿠폰", "상품권", "티켓"]
-               , "악기": ["도서", "문구", "기프티콘", "쿠폰", "상품권", "티켓"]
-               , "반려동물" : ["강아지", "고양이", "사료", "강아지 간식", "고양이 간식", "강아지 용품", "고양이 용품"]
-               , "미용": ["스킨케어", "로션", "메이크업", "향수", "네일아트", "미용", "다이어트", "화장품"]
-               , "콘솔게임": ["플레이스테이션", "XBOX", "게임CD", "닌텐도 스위치", "wii"]
+               , "반려동물": ["사료", "강아지 간식", "고양이 간식", "강아지 용품", "고양이 용품"]
+               , "미용": ["스킨로션", "메이크업", "향수", "네일아트", "컨실러"]
+               , "콘솔게임": ["플스", "XBOX", "ps5", "닌텐도 스위치", "wii"]
             }
 
 
@@ -44,7 +43,7 @@ def get_dangn(keyword):
 
     for check in categoly:
         if keyword == check:
-            end_number = int(50 // len(categoly[keyword]))
+            end_number = int(15 // len(categoly[keyword]))+1
             break
     else:
         print("카테고리 찾지 못함")
@@ -57,12 +56,12 @@ def get_dangn(keyword):
 
     for key in categoly[keyword]:
         # 셀레니움
-        url = "https://www.daangn.com/search/" + key
+        url = "https://www.daangn.com/search/천안 " + key
 
         driver.get(url)
         page = driver.page_source
         soup = BeautifulSoup(page, "html.parser")
-        driver.find_element_by_xpath("//*[@id=\"result\"]/div[1]/div[2]/span").click()
+        #driver.find_element_by_xpath("//*[@id=\"result\"]/div[1]/div[2]/span").click()
 
         driver.implicitly_wait(time_to_wait=5)
 
@@ -105,13 +104,13 @@ def get_dangn(keyword):
 
 
     # DB 연결하기
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
+    conn = pymysql.connect(host="127.0.0.1", user="root", password="1234", db="condb", use_unicode=True)
 
 
     # DB 커서 만들기
     cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-    cursor.execute("TRUNCATE condb.usersells")
+    #cursor.execute("TRUNCATE condb.usersells")
 
     cursor.execute('SET NAMES utf8mb4')
     cursor.execute("SET CHARACTER SET utf8mb4")
@@ -127,5 +126,9 @@ def get_dangn(keyword):
 
     conn.commit()
     print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
+
+for i in cccc:
+    get_dangn(i)
+
 
 
