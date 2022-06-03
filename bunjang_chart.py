@@ -73,13 +73,13 @@ def get_bunjang(search_keyword):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         
         if first is True:
-            cursor.execute("TRUNCATE condb.bunjang_usersells")
+            cursor.execute("TRUNCATE condb.chart_usersells")
         
         cursor.execute('SET NAMES utf8mb4')
         cursor.execute("SET CHARACTER SET utf8mb4")
         cursor.execute("SET character_set_connection=utf8mb4")
 
-        sql = "INSERT INTO condb.bunjang_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        sql = "INSERT INTO condb.chart_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
         
         temp_list = price_list
         np_temp = np.array(temp_list, dtype=np.int64)
@@ -100,3 +100,4 @@ def get_bunjang(search_keyword):
                     cursor.execute(sql, (count, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(price_list[i]), str(link_list[i]), img_link_list[i], 'normal'))
                     count += 1
         conn.commit()
+    return count
