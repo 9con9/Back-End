@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import pymysql
 import chromedriver_autoinstaller
 import re
+import numpy as np
 
 def get_bunjang(search_keyword):
 
@@ -46,7 +47,8 @@ def get_bunjang(search_keyword):
                             price_list.append('0')
                     else:
                         for price in price_div:
-                            price_list.append(price.get_text())
+                            prices = re.sub(r'[^0-9]', '', price.get_text())
+                            price_list.append(prices)
                     name_div = div.find_all(attrs={'class': "sc-fcdeBU iVCsji"})
                     for name in name_div:
                         name_list.append(name.get_text())
@@ -67,10 +69,28 @@ def get_bunjang(search_keyword):
     cursor.execute("SET CHARACTER SET utf8mb4")
     cursor.execute("SET character_set_connection=utf8mb4")
 
-    sql = "INSERT INTO condb.bunjang_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
+    sql = "INSERT INTO condb.bunjang_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    
+    temp_list = price_list
+    np_temp = np.array(temp_list, dtype=np.int64)
+    Q3, Q1, Q2 = np.percentile(np_temp, [80, 20, 50])
+    IQR = Q3 - Q1
+    print(Q3, Q1, Q2, IQR)
+    if IQR > Q2:
+        low_np = list(np_temp[Q1 > np_temp])
+        high_np = list(np_temp[Q3 < np_temp])
+    else:
+        low_np = list(np_temp[Q1-0.2*IQR > np_temp])
+        high_np = list(np_temp[Q3+0.4*IQR < np_temp])
+    print(Q3+0.4*IQR, Q1-0.2*IQR, Q2, IQR)
 
     for i in range(len(name_list)):
-        prices = re.sub(r'[^0-9]', '', price_list[i])
-        cursor.execute(sql, (i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i]))
+        prices = int(re.sub(r'[^0-9]', '', price_list[i]))
+        if prices in low_np:
+            cursor.execute(sql, (i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'low'))
+        elif prices in high_np:
+            cursor.execute(sql, (i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'high'))
+        else:
+            cursor.execute(sql, (i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'normal'))
 
     conn.commit()
