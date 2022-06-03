@@ -79,7 +79,7 @@ def get_naver(keyword):
             ## 이미지주소 가져옴
 
     # DB 연결하기
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="1234", db="condb", use_unicode=True)
+    conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
 
 
     # DB 커서 만들기
@@ -100,5 +100,3 @@ def get_naver(keyword):
 
     conn.commit()
     print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
-
-get_naver("아이패드 에어")
