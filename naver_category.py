@@ -31,7 +31,7 @@ def get_naver(keyword):
 
     for check in categoly:
         if keyword == check:
-            end_number = int(40 // len(categoly[keyword]))
+            end_number = int(16 // len(categoly[keyword])) + 1
             break
     else:
         print("카테고리 찾지 못함")
@@ -107,7 +107,7 @@ def get_naver(keyword):
                 ## 영상주소 가져옴
 
     # DB 연결하기
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
+    conn = pymysql.connect(host="127.0.0.1", user="root", password="1234", db="condb", use_unicode=True)
 
 
     # DB 커서 만들기
@@ -117,7 +117,7 @@ def get_naver(keyword):
     cursor.execute("SET CHARACTER SET utf8mb4")
     cursor.execute("SET character_set_connection=utf8mb4")
 
-    cursor.execute("TRUNCATE condb.naver_usersells")
+    #cursor.execute("TRUNCATE condb.naver_usersells")
 
     # sql 문
     sql = "INSERT INTO condb.naver_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
@@ -130,3 +130,6 @@ def get_naver(keyword):
 
     conn.commit()
     print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
+cccc = ["디지털기기", "가구/인테리어", "유아용품", "스포츠/레저", "의류", "도서/티켓/문구", "반려동물", "미용", "콘솔게임"]
+for i in cccc:
+    get_naver(i)
