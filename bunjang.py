@@ -63,13 +63,13 @@ def get_bunjang(search_keyword):
 
     cursor = conn.cursor(pymysql.cursors.DictCursor)
     
-    cursor.execute("TRUNCATE condb.bunjang_usersells")
+    cursor.execute("TRUNCATE condb.bunjang")
     
     cursor.execute('SET NAMES utf8mb4')
     cursor.execute("SET CHARACTER SET utf8mb4")
     cursor.execute("SET character_set_connection=utf8mb4")
 
-    sql = "INSERT INTO condb.bunjang_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    sql = "INSERT INTO condb.bunjang VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
     
     temp_list = price_list
     np_temp = np.array(temp_list, dtype=np.int64)

@@ -74,8 +74,12 @@ def get_dangn(keyword):
             address.append(
                 driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[1]")[
                     0].text.strip())
-            price.append(driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[2]")[
-                             0].text.strip())
+            if len(re.sub(r'[^0-9]', '', driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[2]")[
+                0].text.strip())) == 0:
+                price.append('0')
+            else:
+                price.append(re.sub(r'[^0-9]', '', driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[2]")[
+                0].text.strip()))
             link.append(
                 driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a")[0].get_attribute(
                     'href'))
@@ -104,31 +108,28 @@ def get_dangn(keyword):
 
 
     # DB 연결하기
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="1234", db="condb", use_unicode=True)
+    conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
 
 
     # DB 커서 만들기
     cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-    #cursor.execute("TRUNCATE condb.usersells")
+    cursor.execute("TRUNCATE condb.daagun")
 
     cursor.execute('SET NAMES utf8mb4')
     cursor.execute("SET CHARACTER SET utf8mb4")
     cursor.execute("SET character_set_connection=utf8mb4")
 
     # sql 문
-    sql = "INSERT INTO condb.UserSells VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
+    sql = "INSERT INTO condb.daagun VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
     # db에 sql
     for i in range(len(name)):
         cursor.execute(sql,
-                       (i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]), img_link[i]))
+                       (i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]), img_link[i], 'normal'))
 
     conn.commit()
     print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
 
 for i in cccc:
     get_dangn(i)
-
-
-

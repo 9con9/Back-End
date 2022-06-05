@@ -79,16 +79,16 @@ def get_bunjang(search_keyword):
 
     cursor = conn.cursor(pymysql.cursors.DictCursor)
     
-    cursor.execute("TRUNCATE condb.bunjang_usersells")
+    cursor.execute("TRUNCATE condb.bunjang")
     
     cursor.execute('SET NAMES utf8mb4')
     cursor.execute("SET CHARACTER SET utf8mb4")
     cursor.execute("SET character_set_connection=utf8mb4")
 
-    sql = "INSERT INTO condb.bunjang_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
+    sql = "INSERT INTO condb.bunjang VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
     for i in range(len(name_list)):
         prices = re.sub(r'[^0-9]', '', price_list[i])
-        cursor.execute(sql, (i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i]))
+        cursor.execute(sql, (i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'normal'))
 
     conn.commit()
