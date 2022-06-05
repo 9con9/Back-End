@@ -79,14 +79,14 @@ def get_dangn(keyword):
     # DB 커서 만들기
     cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-    cursor.execute("TRUNCATE condb.usersells")
+    cursor.execute("TRUNCATE condb.daagun")
 
     cursor.execute('SET NAMES utf8mb4')
     cursor.execute("SET CHARACTER SET utf8mb4")
     cursor.execute("SET character_set_connection=utf8mb4")
 
     # sql 문
-    sql = "INSERT INTO condb.UserSells VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    sql = "INSERT INTO condb.daagun VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
     
     temp_list = price
     np_temp = np.array(temp_list, dtype=np.int64)

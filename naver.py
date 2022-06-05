@@ -97,10 +97,10 @@ def get_naver(keyword):
     cursor.execute("SET CHARACTER SET utf8mb4")
     cursor.execute("SET character_set_connection=utf8mb4")
     
-    cursor.execute("TRUNCATE condb.naver_usersells")
+    cursor.execute("TRUNCATE condb.joongna")
 
     # sql 문
-    sql = "INSERT INTO condb.naver_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    sql = "INSERT INTO condb.joongna VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
     
     temp_list = price
     np_temp = np.array(temp_list, dtype=np.int64)
@@ -116,11 +116,11 @@ def get_naver(keyword):
     # db에 sql
     for i in range(len(name)):
         if int(price[i]) in low_np:
-            cursor.execute(sql,(i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]),img_link[i], 'low'))
+            cursor.execute(sql,(i + 1, '중고나라', pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]),img_link[i], 'low'))
         elif int(price[i]) in high_np:
-            cursor.execute(sql,(i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]),img_link[i], 'high'))
+            cursor.execute(sql,(i + 1, '중고나라', pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]),img_link[i], 'high'))
         else:
-            cursor.execute(sql,(i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]),img_link[i], 'normal'))
+            cursor.execute(sql,(i + 1, '중고나라', pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]),img_link[i], 'normal'))
 
     conn.commit()
     print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간

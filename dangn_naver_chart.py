@@ -211,7 +211,7 @@ def dangn_parsing(start, end, name, address, price, link, img_link, upload_time,
 def set_db(platform, pattern,name,  upload_time, address, price, link, img_link, count, keyword):
     # DB 연결하기
 
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="!mlpko159487", db="condb", use_unicode=True)
+    conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
 
     # DB 커서 만들기
     cursor = conn.cursor(pymysql.cursors.DictCursor)
