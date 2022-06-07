@@ -131,5 +131,5 @@ def get_dangn(keyword):
     conn.commit()
     print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
 
-for i in cccc:
-    get_dangn(i)
+# for i in cccc:
+#     get_dangn(i)
