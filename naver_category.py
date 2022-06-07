@@ -130,6 +130,6 @@ def get_naver(keyword):
 
     conn.commit()
     print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
-cccc = ["디지털기기", "가구/인테리어", "유아용품", "스포츠/레저", "의류", "도서/티켓/문구", "반려동물", "미용", "콘솔게임"]
-for i in cccc:
-    get_naver(i)
+# cccc = ["디지털기기", "가구/인테리어", "유아용품", "스포츠/레저", "의류", "도서/티켓/문구", "반려동물", "미용", "콘솔게임"]
+# for i in cccc:
+#     get_naver(i)
