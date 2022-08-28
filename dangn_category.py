@@ -1,5 +1,5 @@
-import pymysql
-import requests
+# import pymysql
+# import requests
 from bs4 import BeautifulSoup
 import re
 from selenium import webdriver
@@ -22,6 +22,7 @@ categoly = {"디지털기기": ["스마트폰","태블릿", "스마트워치", "
 
 
 def get_dangn(keyword):
+    result = []
     # 이모티콘 제거하기
     pattern = re.compile("["
                          u"\U00010000-\U0010FFFF"  # BMP characters 이외
@@ -108,28 +109,31 @@ def get_dangn(keyword):
 
 
     # DB 연결하기
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
+    # conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
 
 
-    # DB 커서 만들기
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    # # DB 커서 만들기
+    # cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-    cursor.execute("TRUNCATE condb.daagun")
+    # cursor.execute("TRUNCATE condb.daagun")
 
-    cursor.execute('SET NAMES utf8mb4')
-    cursor.execute("SET CHARACTER SET utf8mb4")
-    cursor.execute("SET character_set_connection=utf8mb4")
+    # cursor.execute('SET NAMES utf8mb4')
+    # cursor.execute("SET CHARACTER SET utf8mb4")
+    # cursor.execute("SET character_set_connection=utf8mb4")
 
-    # sql 문
-    sql = "INSERT INTO condb.daagun VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    # # sql 문
+    # sql = "INSERT INTO condb.daagun VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
     # db에 sql
     for i in range(len(name)):
-        cursor.execute(sql,
-                       (i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]), img_link[i], 'normal'))
+        # cursor.execute(sql,
+        #                (i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]), img_link[i], 'normal'))
+        result.append([i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]), img_link[i], 'normal'])
 
-    conn.commit()
-    print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
-
+    # conn.commit()
+    # print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
+    print(result)
 # for i in cccc:
 #     get_dangn(i)
+
+get_dangn("디지털기기")
