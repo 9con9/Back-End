@@ -1,6 +1,6 @@
 from distutils.command.upload import upload
-import pymysql
-import requests
+# import pymysql
+# import requests
 from bs4 import BeautifulSoup
 import re
 from selenium import webdriver
@@ -13,19 +13,23 @@ import numpy as np
 
 start = time.time()  # 시작 시간 저장
 def get_data(keyword):
-    count = bj.get_bunjang(keyword)-1
-    count = 0
+    bunjang = bj.get_bunjang(keyword)
+    count = len(bunjang)
     spl = keyword.split()
     list_spl = [k for k in spl]
     naver_keyword_list = list_spl[1:]
     naver_keyword = " ".join(naver_keyword_list)
     print("나 네이버 키워드" ,naver_keyword)
     print(naver_keyword)
-    count = keyword_dangn(keyword, count)
-    keyword_naver(naver_keyword, count)
-    remove_db()
-
-
+    dangn = keyword_dangn(keyword, count)
+    naver = keyword_naver(naver_keyword, count)
+    bunjang = np.array(bunjang)
+    dangn = np.array(dangn)
+    naver = np.array(naver)
+    arr = np.concatenate((bunjang, dangn, naver))
+    print(arr.shape)
+    return list(arr)
+    # remove_db()
 
 
 
@@ -57,7 +61,7 @@ def keyword_naver(keyword, count):
     page = driver.page_source
     soup = BeautifulSoup(page, "html.parser")
 
-    driver.find_element_by_xpath('//*[@id="root"]/div[1]/section/article/button').click()
+    driver.find_element("xpath", '//*[@id="root"]/div[1]/section/article/button').click()
     print("나 클릭할고얌")
 
     naver_parsing(2, 12, name, address, price, link, img_link, upload_time, driver)
@@ -69,7 +73,7 @@ def keyword_naver(keyword, count):
             print()
             print("나 클릭할고얌")
             print()
-            driver.find_element_by_xpath('//*[@id="root"]/div[1]/section/article/button').click()
+            driver.find_element("xpath", '//*[@id="root"]/div[1]/section/article/button').click()
             plus_count = 0
         print("나는 일  :" ,upload_time[-1][1:2])
         print("나는 숫자 : ",upload_time[-1][0:1])
@@ -79,7 +83,7 @@ def keyword_naver(keyword, count):
         plus_count += 1
     print("DB들어간다.")
     # DB 연결하기
-    set_db("중고 나라", pattern, name, upload_time, address, price, link, img_link, count, keyword)
+    return set_db("중고 나라", pattern, name, upload_time, address, price, link, img_link, count, keyword)
 
 def naver_parsing(start, end, name, address, price, link, img_link, upload_time, driver):
     for i in range(start,end):
@@ -87,27 +91,27 @@ def naver_parsing(start, end, name, address, price, link, img_link, upload_time,
         
         address.append("None")
         ## 위치 못가져옴
-        upload_time.append(driver.find_elements_by_xpath(
+        upload_time.append(driver.find_elements("xpath", 
             '// *[ @ id = "root"] / div[1] / section / article / div / div[' + str(i) + '] / div / div / a / div / p')[0].text)
-        print(driver.find_elements_by_xpath(
+        print(driver.find_elements("xpath", 
             '// *[ @ id = "root"] / div[1] / section / article / div / div[' + str(i) + '] / div / div / a / div / p')[0].text)
             ## 업로드시간 가져옴
-        name.append(driver.find_elements_by_xpath('//*[@id="root"]/div[1]/section/article/div/div[' + str(i) + ']/div/div/a/span')[0].text)
+        name.append(driver.find_elements("xpath", '//*[@id="root"]/div[1]/section/article/div/div[' + str(i) + ']/div/div/a/span')[0].text)
         ## 이름 가져옴
         #upload_time.append(driver.find_elements_by_xpath('// *[ @ id = "root"] / div[1] / section / article / div / div[' + str(i) + '] / div / div / a / div / p')[0].text)
         ## 업로드시간 가져옴
-        if len(re.sub(r'[^0-9]', '', driver.find_elements_by_xpath('// *[ @ id = "root"] / div[1] / section / article / div / div[' + str(i) + '] / div / div / a / p')[0].text)) == 0:
+        if len(re.sub(r'[^0-9]', '', driver.find_elements("xpath", '// *[ @ id = "root"] / div[1] / section / article / div / div[' + str(i) + '] / div / div / a / p')[0].text)) == 0:
             price.append("0")
         else:
-            price.append(re.sub(r'[^0-9]', '', driver.find_elements_by_xpath('// *[ @ id = "root"] / div[1] / section / article / div / div[' + str(i) + '] / div / div / a / p')[0].text))
+            price.append(re.sub(r'[^0-9]', '', driver.find_elements("xpath", '// *[ @ id = "root"] / div[1] / section / article / div / div[' + str(i) + '] / div / div / a / p')[0].text))
         ## 가격 가져옴
-        link.append(driver.find_elements_by_xpath('// *[ @ id = "root"] / div[1] / section / article / div / div[' + str(i) + '] / div / a')[0].get_attribute('href'))
+        link.append(driver.find_elements("xpath", '// *[ @ id = "root"] / div[1] / section / article / div / div[' + str(i) + '] / div / a')[0].get_attribute('href'))
         ## 해당 주소 가져옴
         try:
-            img_link.append(driver.find_elements_by_xpath('//*[@id="root"]/div[1]/section/article/div/div[' + str(i) + ']/div/a/div/img')[0].get_attribute("src"))
+            img_link.append(driver.find_elements("xpath", '//*[@id="root"]/div[1]/section/article/div/div[' + str(i) + ']/div/a/div/img')[0].get_attribute("src"))
             ## 영상 가져옴
         except:
-            img_link.append(driver.find_elements_by_xpath('//*[@id="root"]/div[1]/section/article/div/div[' + str(i) + ']/div/div/a')[0].get_attribute("href"))
+            img_link.append(driver.find_elements("xpath", '//*[@id="root"]/div[1]/section/article/div/div[' + str(i) + ']/div/div/a')[0].get_attribute("href"))
             ## 이미지주소 가져옴
 
 
@@ -136,8 +140,8 @@ def keyword_dangn(keyword, count):
     page = driver.page_source
     soup = BeautifulSoup(page, "html.parser")
     driver.implicitly_wait(time_to_wait=5)
-    driver.find_element_by_xpath("//*[@id=\"result\"]/div[1]/div[2]/span").click()
-    driver.find_element_by_xpath("//*[@id=\"result\"]/div[1]/div[2]/span").click()
+    driver.find_element("xpath", "//*[@id=\"result\"]/div[1]/div[2]/span").click()
+    driver.find_element("xpath", "//*[@id=\"result\"]/div[1]/div[2]/span").click()
 
     driver.implicitly_wait(time_to_wait=5)
 
@@ -155,7 +159,7 @@ def keyword_dangn(keyword, count):
         plus = end // 12
         print(plus)
         for i in range(plus+1):
-            driver.find_element_by_xpath("//*[@id=\"result\"]/div[1]/div[2]/span").click()
+            driver.find_element("xpath", "//*[@id=\"result\"]/div[1]/div[2]/span").click()
         dangn_parsing(start, end, name, address, price, link, img_link, upload_time, driver, url)
         start = end
         end += 10
@@ -175,22 +179,22 @@ def dangn_parsing(start, end, name, address, price, link, img_link, upload_time,
     for i in range(start, end):
         print(i)
 
-        name.append(driver.find_elements_by_xpath(
+        name.append(driver.find_elements("xpath", 
             "//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/div/span[1]")[0].text)
         address.append(
-            driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[1]")[
+            driver.find_elements("xpath", "//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[1]")[
                 0].text.strip())
-        if len(re.sub(r'[^0-9]', '', driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[2]")[
+        if len(re.sub(r'[^0-9]', '', driver.find_elements("xpath", "//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[2]")[
                 0].text.strip())) == 0:
             price.append('0')
         else:
-            price.append(re.sub(r'[^0-9]', '', driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[2]")[
+            price.append(re.sub(r'[^0-9]', '', driver.find_elements("xpath", "//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[2]")[
                 0].text.strip()))
         link.append(
-            driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a")[0].get_attribute(
+            driver.find_elements("xpath", "//*[@id='flea-market-wrap']/article[" + str(i) + "]/a")[0].get_attribute(
                 'href'))
         img_link.append(
-            driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[1]/img")[
+            driver.find_elements("xpath", "//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[1]/img")[
                 0].get_attribute("src"))
         
     link_start = start - 2
@@ -200,7 +204,7 @@ def dangn_parsing(start, end, name, address, price, link, img_link, upload_time,
         driver.get(link[i])
         page = driver.page_source
         soup = BeautifulSoup(page, "html.parser")
-        temp_upload_time = driver.find_elements_by_xpath('//*[@id="article-category"]/time')[0].text
+        temp_upload_time = driver.find_elements("xpath", '//*[@id="article-category"]/time')[0].text
         if temp_upload_time[0:2] == "끌올":
             upload_time.append(temp_upload_time[3:])
         else:
@@ -209,18 +213,20 @@ def dangn_parsing(start, end, name, address, price, link, img_link, upload_time,
 
 
 def set_db(platform, pattern,name,  upload_time, address, price, link, img_link, count, keyword):
+    
+    result = []
     # DB 연결하기
 
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
+    # conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
 
-    # DB 커서 만들기
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    # # DB 커서 만들기
+    # cursor = conn.cursor(pymysql.cursors.DictCursor)
 
   #  cursor.execute("TRUNCATE condb.usersells")
 
-    cursor.execute('SET NAMES utf8mb4')
-    cursor.execute("SET CHARACTER SET utf8mb4")
-    cursor.execute("SET character_set_connection=utf8mb4")
+    # cursor.execute('SET NAMES utf8mb4')
+    # cursor.execute("SET CHARACTER SET utf8mb4")
+    # cursor.execute("SET character_set_connection=utf8mb4")
     
     print("나는 시간")
     print(upload_time[-1][1:3])
@@ -245,7 +251,7 @@ def set_db(platform, pattern,name,  upload_time, address, price, link, img_link,
         high_np = list(np_temp[Q3+0.4*IQR < np_temp])
 
     # sql 문
-    sql = "INSERT INTO condb.chart_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    # sql = "INSERT INTO condb.chart_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     print(count)
     # db에 sql
     for i in range(len(name)):
@@ -256,25 +262,25 @@ def set_db(platform, pattern,name,  upload_time, address, price, link, img_link,
             # cursor.execute(sql,(count + 1, platform, pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]),img_link[i], 'high'))
             pass
         else:
-            cursor.execute(sql,(count + 1, platform, pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]),img_link[i], 'normal', keyword))
+            result.append([count + 1, platform, pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]),img_link[i], 'normal', keyword])
         print(str(count) + "번쨰 디비들어간다")
         count += 1
     print(count)
-    conn.commit()
-    return count
+    # conn.commit()
+    return result
 
 def remove_db():
     print("DB제거 들어간다")
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
+    # conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
 
-    # DB 커서 만들기
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    # # DB 커서 만들기
+    # cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-    for i in range(8,30):
-        cursor.execute('Delete from condb.chart_usersells where upload_time = "' + str(i) + '일 전"')
+    # for i in range(8,30):
+    #     cursor.execute('Delete from condb.chart_usersells where upload_time = "' + str(i) + '일 전"')
 
-    conn.commit()
-    print("DB제거 끝났당")
+    # conn.commit()
+    # print("DB제거 끝났당")
 
 #keyword_naver('아이폰13', 200)
 print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간

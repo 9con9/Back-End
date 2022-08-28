@@ -1,11 +1,13 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import re
-import pymysql
+# import pymysql
 import chromedriver_autoinstaller
 import numpy as np
 
 def get_bunjang(search_keyword):
+    
+    result = []
 
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
@@ -72,18 +74,18 @@ def get_bunjang(search_keyword):
                             else:
                                 upload_time_list.append(time)
 
-        conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
+        # conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
 
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        # cursor = conn.cursor(pymysql.cursors.DictCursor)
         
-        if first is True:
-            cursor.execute("TRUNCATE condb.chart_usersells")
+        # if first is True:
+        #     cursor.execute("TRUNCATE condb.chart_usersells")
         
-        cursor.execute('SET NAMES utf8mb4')
-        cursor.execute("SET CHARACTER SET utf8mb4")
-        cursor.execute("SET character_set_connection=utf8mb4")
+        # cursor.execute('SET NAMES utf8mb4')
+        # cursor.execute("SET CHARACTER SET utf8mb4")
+        # cursor.execute("SET character_set_connection=utf8mb4")
 
-        sql = "INSERT INTO condb.chart_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        # sql = "INSERT INTO condb.chart_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         
         temp_list = price_list
         np_temp = np.array(temp_list, dtype=np.int64)
@@ -108,7 +110,7 @@ def get_bunjang(search_keyword):
                         # count += 1
                         pass
                     else:
-                        cursor.execute(sql, (count, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(price_list[i]), str(link_list[i]), img_link_list[i], 'normal', search_keyword))
+                        result.append([count, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(price_list[i]), str(link_list[i]), img_link_list[i], 'normal', search_keyword])
                         count += 1
             else:
                 if int(price_list[i]) in low_np:
@@ -120,7 +122,7 @@ def get_bunjang(search_keyword):
                     # count += 1
                     pass
                 else:
-                    cursor.execute(sql, (count, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(price_list[i]), str(link_list[i]), img_link_list[i], 'normal', search_keyword))
+                    result.append([count, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(price_list[i]), str(link_list[i]), img_link_list[i], 'normal', search_keyword])
                     count += 1
-        conn.commit()
-    return count
+        # conn.commit()
+    return result
