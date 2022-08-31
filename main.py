@@ -1,6 +1,7 @@
 import flask
 # import dangn
 # import naver
+import joongna
 import bunjang
 import dangn_naver_chart
 # import dangn_category
@@ -39,7 +40,8 @@ def startParsing():
     else:
         # dangn.get_dangn(keyword)
         # naver.get_naver(naver_keyword)
-        result = bunjang.get_bunjang(keyword)
+        # result = bunjang.get_bunjang(keyword)
+        result = joongna.get_joongna(keyword)
         result_list = []
         for i in result:
             results = {"index":i[0], "platform":i[1], "name":i[2], "time":i[3], "place":i[4],
@@ -74,7 +76,7 @@ def startParsing_chart():
         result_np = np.array(result)
         result_df = pd.DataFrame(result_np)
         result_df.columns = ['index', 'platform', 'name', 'time', 'place', 'price', 'link', 'img_link', 'outlier', 'keyword']
-        # print(result_df.head())
+        print(result_df.head())
         df = result_df.groupby('time')['price'].median()
         df = df.astype({'price':'int64'})
         list_col2 = df.drop(columns= ['time', 'price'])
