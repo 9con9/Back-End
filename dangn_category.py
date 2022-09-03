@@ -38,7 +38,7 @@ def get_dangn(keyword):
 
     # 변수 초기화
     end_number = 0
-    name, address, price, link, img_link, upload_time = [], [], [], [], [], []
+    name_list, address_list, price_list, link_list, img_link_list, upload_time_list = [], [], [], [], [], []
     print(end_number)
 
 
@@ -66,74 +66,84 @@ def get_dangn(keyword):
 
         driver.implicitly_wait(time_to_wait=5)
 
-        for i in range(2, end_number+1):
-            print(i)
+        items = soup.select("#flea-market-wrap")
 
-            name.append(
-                driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/div/span[1]")[
-                    0].text)
-            address.append(
-                driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[1]")[
-                    0].text.strip())
-            if len(re.sub(r'[^0-9]', '', driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[2]")[
-                0].text.strip())) == 0:
-                price.append('0')
-            else:
-                price.append(re.sub(r'[^0-9]', '', driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[2]")[
-                0].text.strip()))
-            link.append(
-                driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a")[0].get_attribute(
-                    'href'))
-            img_link.append(
-                driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[1]/img")[
-                    0].get_attribute("src"))
+        for i in items:
+            articles = i.find_all("article")
+            for art in articles:
+                link_art = art.find_all(attrs={'class': 'flea-market-article-link'})
+                for link in link_art:
+                    href = link.attrs["href"]
+                    link_list.append("https://www.daangn.com/" + href)
+
+                    imgs = link.find('img')
+                    img = imgs['src']
+
+                    img_link_list.append(img)
+
+                price_p = art.find_all(attrs={'class': "article-price"})
+                for pr in price_p:
+                    prices = re.sub(r'[^0-9]', '', pr.get_text().strip())
+                    print(prices)
+                    price_list.append(prices)
+
+                name_s = art.find_all(attrs={'class': "article-title"})
+                for name in name_s:
+                    name_list.append(name.get_text().strip())
+
+                place_p = art.find_all(attrs={'class': "article-region-name"})
+                for place in place_p:
+                    address_list.append(place.get_text().strip())
+
+        # for i in range(2, end_number+1):
+        #     print(i)
+        #
+        #     name.append(
+        #         driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/div/span[1]")[
+        #             0].text)
+        #     address.append(
+        #         driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[1]")[
+        #             0].text.strip())
+        #     if len(re.sub(r'[^0-9]', '', driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[2]")[
+        #         0].text.strip())) == 0:
+        #         price.append('0')
+        #     else:
+        #         price.append(re.sub(r'[^0-9]', '', driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[2]")[
+        #         0].text.strip()))
+        #     link.append(
+        #         driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a")[0].get_attribute(
+        #             'href'))
+        #     img_link.append(
+        #         driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[1]/img")[
+        #             0].get_attribute("src"))
 
 
         for i in range(link_start , link_end):
-            driver.get(link[i])
+            driver.get(link_list[i])
             page = driver.page_source
             soup = BeautifulSoup(page, "html.parser")
             temp_upload_time = driver.find_elements_by_xpath('//*[@id="article-category"]/time')[0].text
             if temp_upload_time[0:2] == "끌올":
-                upload_time.append(temp_upload_time[3:])
+                upload_time_list.append(temp_upload_time[3:])
             else:
-                upload_time.append(temp_upload_time)
+                upload_time_list.append(temp_upload_time)
 
         link_start = link_end
         link_end += (end_number - 1)
 
-        print("업로드 타임: ", upload_time)
-        print("이름들 : ", name)
+        print("업로드 타임: ", upload_time_list)
+        print("이름들 : ", name_list)
         print(link_start)
         print(link_end)
 
 
-    # DB 연결하기
-    # conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
 
-
-    # # DB 커서 만들기
-    # cursor = conn.cursor(pymysql.cursors.DictCursor)
-
-    # cursor.execute("TRUNCATE condb.daagun")
-
-    # cursor.execute('SET NAMES utf8mb4')
-    # cursor.execute("SET CHARACTER SET utf8mb4")
-    # cursor.execute("SET character_set_connection=utf8mb4")
-
-    # # sql 문
-    # sql = "INSERT INTO condb.daagun VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-
-    # db에 sql
     for i in range(len(name)):
-        # cursor.execute(sql,
-        #                (i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]), img_link[i], 'normal'))
-        result.append([i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]), img_link[i], 'normal'])
+        result.append([i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time_list[i], address_list[i], price_list[i], str(link[i]), img_link_list[i], 'normal'])
 
-    # conn.commit()
+
     # print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
     print(result)
-# for i in cccc:
-#     get_dangn(i)
+
 
 get_dangn("디지털기기")
