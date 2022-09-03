@@ -13,6 +13,7 @@ import numpy as np
 
 start = time.time()  # 시작 시간 저장
 def get_data(keyword):
+    result = []
     bunjang = bj.get_bunjang(keyword)
     count = len(bunjang)
     spl = keyword.split()
@@ -26,10 +27,10 @@ def get_data(keyword):
     bunjang = np.array(bunjang)
     dangn = np.array(dangn)
     naver = np.array(naver)
-    arr = np.concatenate((bunjang, dangn, naver))
-    print(arr.shape)
-    return list(arr)
+    all = list(np.concatenate((bunjang, dangn, naver)))
+    result.extend(naver, dangn, bunjang, all)
     # remove_db()
+    return result
 
 
 
