@@ -121,6 +121,3 @@ def get_dangn(keyword):
     return result
     # conn.commit()
     print("time :", time.time() - start)
-
-
-print(get_dangn("인천 아이패드"))

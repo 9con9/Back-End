@@ -9,7 +9,7 @@ import chromedriver_autoinstaller
 import time
 from time import sleep
 import bunjang_chart as bj
-import numpy as np
+import numpy as np  
 
 start = time.time()  # 시작 시간 저장
 def get_data(keyword):
@@ -22,13 +22,14 @@ def get_data(keyword):
     naver_keyword = " ".join(naver_keyword_list)
     print("나 네이버 키워드" ,naver_keyword)
     print(naver_keyword)
-    dangn = keyword_dangn(keyword, count)
-    naver = keyword_naver(naver_keyword, count)
-    bunjang = np.array(bunjang)
-    dangn = np.array(dangn)
-    naver = np.array(naver)
-    all = list(np.concatenate((bunjang, dangn, naver)))
-    result.extend(naver, dangn, bunjang, all)
+    # dangn = keyword_dangn(keyword, count)
+    # naver = keyword_naver(naver_keyword, count)
+    # bunjang = np.array(bunjang)
+    # dangn = np.array(dangn)
+    # naver = np.array(naver)
+    # all = list(np.concatenate((bunjang, dangn, naver)))
+    # result.extend(naver, dangn, bunjang, all)
+    result.extend([bunjang, bunjang, bunjang, bunjang])
     # remove_db()
     return result
 
