@@ -461,6 +461,7 @@ def remove_db():
     # print("DB제거 끝났당")
 
 #keyword_naver('아이폰13', 200)
-print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
 
-keyword_joongna("아이패드 에어4")
+
+keyword_dangn("인천 아이패드 에어4", 1)
+print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간

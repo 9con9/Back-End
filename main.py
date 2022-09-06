@@ -62,6 +62,8 @@ def startParsing_chart():
     naver_keyword = " ".join(naver_keyword_list)
     print(naver_keyword)
     ###
+    chart_result = []
+    result_dict = {}
 
     for check in categoly:
         if keyword == check:
@@ -72,15 +74,36 @@ def startParsing_chart():
     else:
         # dangn.get_dangn(keyword)
         # naver.get_naver(naver_keyword)
-        result = dangn_naver_chart.get_data(keyword)
-        result_np = np.array(result)
-        result_df = pd.DataFrame(result_np)
-        result_df.columns = ['index', 'platform', 'name', 'time', 'place', 'price', 'link', 'img_link', 'outlier', 'keyword']
-        print(result_df.head())
-        df = result_df.groupby('time')['price'].median()
-        df = df.astype({'price':'int64'})
-        list_col2 = df.drop(columns= ['time', 'price'])
-        list_col2 = list_col2.to_dict()
+        results = dangn_naver_chart.get_data(keyword)
+        count = 0
+        for result in results:
+            result_np = np.array(result)
+            result_df = pd.DataFrame(result_np)
+            result_df.columns = ['index', 'platform', 'name', 'time', 'place', 'price', 'link', 'img_link', 'outlier', 'keyword']
+            df = result_df.groupby('time')['price'].median()
+            df = df.astype({'price':'int64'})
+            list_col2 = df.drop(columns= ['time', 'price'])
+            col2_index = list(list_col2.index)
+            col2_list = list(list_col2)
+            chart_result.append(col2_list)
+            if count == 3:
+                chart_result.append(col2_index)
+            else:
+                count += 1
+                
+        
+        for chart_index in range(len(chart_result)):
+            chart = chart_result[chart_index]
+            if chart_index == 0:
+                result_dict['joongna'] = chart
+            elif chart_index == 1:
+                result_dict['dangn'] = chart
+            elif chart_index == 2:
+                result_dict['bunjang'] = chart
+            elif chart_index == 3:
+                result_dict['all'] = chart
+            else:
+                result_dict['date'] = chart
         
         
         # result_list = []
@@ -88,8 +111,8 @@ def startParsing_chart():
         #     results = {"index":i[0], "platform":i[1], "name":i[2], "time":i[3], "place":i[4],
         #                   "price":i[5], "link":i[6], "img_link":i[7], "outlier":i[8]}
         #     result_list.append(results)
-    return list_col2
+    return result_dict
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run('0.0.0.0', port=5000,debug=True)
 

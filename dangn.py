@@ -31,7 +31,7 @@ def get_dangn(keyword):
 
     # 셀레니움
 
-    driver = webdriver.Chrome(chromedriver_autoinstaller.install())  # , options=options)
+    driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
     driver.implicitly_wait(time_to_wait=5)
     driver.get(url)
     driver.find_element("xpath", "//*[@id=\"result\"]/div[1]/div[2]/span").click()
@@ -58,9 +58,12 @@ def get_dangn(keyword):
 
             price_p = art.find_all(attrs={'class': "article-price"})
             for pr in price_p:
-                prices = re.sub(r'[^0-9]', '', pr.get_text().strip())
+                prices = re.sub(r'[^0-9]', '', pr.get_text())
                 print(prices)
-                price_list.append(int(prices))
+                if len(prices) == 0:
+                    price_list.append(0)
+                else:
+                    price_list.append(int(prices))
 
             name_s = art.find_all(attrs={'class': "article-title"})
             for name in name_s:
@@ -69,18 +72,6 @@ def get_dangn(keyword):
             place_p = art.find_all(attrs={'class': "article-region-name"})
             for place in place_p:
                 address_list.append(place.get_text().strip())
-
-    print(price_list)
-    print(link_list)
-    print(img_link_list)
-    print(name_list)
-    print(address_list)
-
-    print(len(price_list))
-    print(len(link_list))
-    print(len(img_link_list))
-    print(len(name_list))
-    print(len(address_list))
 
     # start = time.time()  # 시작 시간 저장
     # for link in link_list:
@@ -101,11 +92,12 @@ def get_dangn(keyword):
             upload_time_list.append(temp_upload_time[3:])
         else:
             upload_time_list.append(temp_upload_time)
+        print(temp_upload_time)
     print("time :", time.time() - start)
 
     temp_list = price_list
     np_temp = np.array(temp_list, dtype=np.int64)
-    Q3, Q1, Q2 = np.percentile(np_temp, [80, 20, 50])
+    Q3, Q1, Q2 = np.percentile(np_temp, [75, 25, 50])
     IQR = Q3 - Q1
     if IQR > Q2:
         low_np = list(np_temp[Q1 > np_temp])
@@ -116,18 +108,16 @@ def get_dangn(keyword):
 
     for i in range(len(name_list)):
         if int(price_list[i]) in low_np:
-            result.append([i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time_list[i], address_list[i], price_list[i],
-                           str(link[i]), img_link_list[i], 'low'])
+            result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i],
+                           str(link_list[i]), img_link_list[i], 'low'])
         elif int(price_list[i]) in high_np:
-            result.append([i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time_list[i], address_list[i], price_list[i],
-                           str(link[i]), img_link_list[i], 'high'])
+            result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i],
+                           str(link_list[i]), img_link_list[i], 'high'])
         else:
-            result.append([i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time_list[i], address_list[i], price_list[i],
-                           str(link[i]), img_link_list[i], 'normal'])
-        print(result)
+            result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i],
+                           str(link_list[i]), img_link_list[i], 'normal'])
+            #result.append([i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time_list[i], address_list[i], price_list[i],
+                          # str(link[i]), img_link_list[i], 'normal'])
     return result
     # conn.commit()
     print("time :", time.time() - start)
-
-
-print(get_dangn("인천 아이패드"))
