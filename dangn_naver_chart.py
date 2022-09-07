@@ -235,7 +235,7 @@ def keyword_dangn(keyword):
     for _ in range(8):
         arr.append(driver.find_element('xpath', "//*[@id=\"result\"]/div[1]/div[2]/span"))
     for ele in range(8):
-        ele[i].click()
+        arr[ele].click()
     page = driver.page_source
     soup = BeautifulSoup(page, "html.parser")
     driver.implicitly_wait(time_to_wait=5)
@@ -479,5 +479,5 @@ def set_db(platform, pattern,name,  upload_time, address, price, link, img_link,
 #keyword_naver('아이폰13', 200)
 
 
-keyword_dangn("아이패드 에어4")#, 1)
+# keyword_dangn("아이패드 에어4")#, 1)
 # print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
