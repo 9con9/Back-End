@@ -1,5 +1,5 @@
 import flask
-# import dangn
+import dangn
 # import naver
 import joongna
 import bunjang
@@ -38,10 +38,10 @@ def startParsing():
             # bunjang_category.get_bunjang(keyword)
             break
     else:
-        # dangn.get_dangn(keyword)
+        result = dangn.get_dangn(keyword)
         # naver.get_naver(naver_keyword)
         # result = bunjang.get_bunjang(keyword)
-        result = joongna.get_joongna(keyword)
+        # result = joongna.get_joongna(keyword)
         result_list = []
         for i in result:
             results = {"index":i[0], "platform":i[1], "name":i[2], "time":i[3], "place":i[4],
