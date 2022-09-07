@@ -235,7 +235,7 @@ def keyword_dangn(keyword):
     for _ in range(8):
         arr.append(driver.find_element('xpath', "//*[@id=\"result\"]/div[1]/div[2]/span"))
     for ele in range(8):
-        ele[i].click()
+        arr[ele].click()
     page = driver.page_source
     soup = BeautifulSoup(page, "html.parser")
     driver.implicitly_wait(time_to_wait=5)
