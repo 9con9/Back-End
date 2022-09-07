@@ -88,11 +88,15 @@ def keyword_joongna(search_keyword):
                     for time in time_div:
                         spans = time.find_all('span')
                         flag = True
-                        print(time)
+                        # print(time)
                         for span in spans:
                             if len(time) == 1:
                                 tim = span.get_text()
-                                upload_time_list.append(tim)
+                                if tim[1] in '시' or tim[2] in '시' or tim[1] in '분' or tim[2] in '분' or \
+                                        tim[1] in '초' or tim[2] in '초':
+                                    upload_time_list.append('오늘')
+                                else:
+                                    upload_time_list.append(tim)
                                 address_list.append('None')
                             else:
                                 if flag is True:
@@ -101,11 +105,17 @@ def keyword_joongna(search_keyword):
                                     flag = False
                                 else:
                                     tim = span.get_text()
-                                    upload_time_list.append(tim)
+                                    if tim[1] in '시' or tim[2] in '시' or tim[1] in '분' or tim[2] in '분' or \
+                                            tim[1] in '초' or tim[2] in '초':
+                                        upload_time_list.append('오늘')
+                                    else:
+                                        upload_time_list.append(tim)
 
-    print(len(name_list), upload_time_list, len(price_list), len(link_list), len(img_link_list), address_list)
+    # print(len(name_list), upload_time_list, len(price_list), len(link_list), len(img_link_list), address_list)
     for check in upload_time_list:
-        if not ((int(check[0:1]) < 8) and (check[2:3] != "일") or (check[1:2] == "시") or (check[2:3] == "시") or (check[1:2] == "분") or (check[2:3] == "분")):
+        if check == "오늘":
+            pass
+        elif not ((int(check[0:1]) < 8) and (check[2:3] != "일") or (check[1:2] == "시") or (check[2:3] == "시") or (check[1:2] == "분") or (check[2:3] == "분")):
             index = upload_time_list.index(check)
             del name_list[index:]
             del upload_time_list[index:]
@@ -115,7 +125,8 @@ def keyword_joongna(search_keyword):
             del address_list[index:]
             break;
 
-    print(len(name_list))
+    for a in upload_time_list:
+        print(a)
 
     temp_list = price_list
     np_temp = np.array(temp_list, dtype=np.int64)
@@ -291,12 +302,20 @@ def keyword_dangn(keyword):
             count += 1
             print(temp_upload_time)
         if temp_upload_time[0:2] == "끌올":
-            upload_time_list.append(temp_upload_time[3:])
+            if temp_upload_time[1] in '시' or temp_upload_time[2] in '시' or temp_upload_time[1] in '분' \
+                    or temp_upload_time[2] in '분' or temp_upload_time[1] in '초' or temp_upload_time[2] in '초':
+                upload_time_list.append('오늘')
+            else:
+                upload_time_list.append(temp_upload_time)
         else:
-            upload_time_list.append(temp_upload_time)
+            if temp_upload_time[1] in '시' or temp_upload_time[2] in '시' or temp_upload_time[1] in '분' \
+                    or temp_upload_time[2] in '분' or temp_upload_time[1] in '초' or temp_upload_time[2] in '초':
+                upload_time_list.append('오늘')
+            else:
+                upload_time_list.append(temp_upload_time)
         index += 1
         print(index)
-        print(temp_upload_time)
+        print(upload_time_list[-1])
 
     if count == 4:
         del img_link_list[index:]
@@ -305,13 +324,51 @@ def keyword_dangn(keyword):
         del address_list[index:]
         del link_list[index:]
 
+    index = 0
+    while index != len(upload_time_list):
+        print(upload_time_list[index])
+        if upload_time_list[index] == "오늘":
+            index += 1
+            print("인덱스 :" , index)
+        elif ((upload_time_list[index][1:2] == "달") or (upload_time_list[index][2:3] == "달")):
+            del name_list[index]
+            del price_list[index]
+            del address_list[index]
+            del img_link_list[index]
+            del link_list[index]
+            del upload_time_list[index]
+            print(index, " 제거 완료")
+        elif not ((int(upload_time_list[index][0:1]) < 8) and (upload_time_list[index][2:3] != "일") or (upload_time_list[index][1:2] == "시") or (
+                upload_time_list[index][2:3] == "시")):
+            del name_list[index]
+            del price_list[index]
+            del address_list[index]
+            del img_link_list[index]
+            del link_list[index]
+            del upload_time_list[index]
+            print(index, " 제거 완료")
+        else:
+            index += 1
+            print("인덱스 :", index)
+
+        print(len(name_list))
+        print(len(price_list))
+        print(len(link_list))
+        print(len(img_link_list))
+        print(len(address_list))
+        print(len(upload_time_list))
+        print()
+        print()
+
+    for a in upload_time_list:
+        print(a)
+
 
 
     print(len(name_list))
     print(len(price_list))
     print(len(link_list))
     print(len(img_link_list))
-    print(len(name_list))
     print(len(address_list))
     print(len(upload_time_list))
 
@@ -479,5 +536,5 @@ def set_db(platform, pattern,name,  upload_time, address, price, link, img_link,
 #keyword_naver('아이폰13', 200)
 
 
-# keyword_dangn("아이패드 에어4")#, 1)
-# print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
+keyword_joongna("아이패드 에어4")
+print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
