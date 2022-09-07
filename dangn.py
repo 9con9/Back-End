@@ -26,7 +26,10 @@ def get_dangn(keyword):
     # 옵션 생성
     options = webdriver.ChromeOptions()
     # 창 숨기는 옵션 추가
-    options.add_argument("headless")
+    options.add_argument('--window-size=1920x1080')
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
     # 셀레니움
