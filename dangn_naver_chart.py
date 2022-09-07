@@ -242,11 +242,8 @@ def keyword_dangn(keyword):
     driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
     driver.implicitly_wait(time_to_wait=5)
     driver.get(url)
-    arr = []
     for _ in range(8):
-        arr.append(driver.find_element('xpath', "//*[@id=\"result\"]/div[1]/div[2]/span"))
-    for ele in range(8):
-        arr[ele].click()
+        driver.find_element('xpath', "//*[@id=\"result\"]/div[1]/div[2]/span").click()
     page = driver.page_source
     soup = BeautifulSoup(page, "html.parser")
     driver.implicitly_wait(time_to_wait=5)
@@ -536,5 +533,5 @@ def set_db(platform, pattern,name,  upload_time, address, price, link, img_link,
 #keyword_naver('아이폰13', 200)
 
 
-keyword_joongna("아이패드 에어4")
-print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
+keyword_dangn("아이패드 에어4")#, 1)
+# print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
