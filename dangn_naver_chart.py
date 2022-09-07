@@ -1,4 +1,4 @@
-from distutils.command.upload import upload
+# from distutils.command.upload import upload
 # import pymysql
 # import requests
 from bs4 import BeautifulSoup
@@ -22,8 +22,8 @@ def get_data(keyword):
     naver_keyword = " ".join(naver_keyword_list)
     print("나 네이버 키워드" ,naver_keyword)
     print(naver_keyword)
-    dangn = keyword_dangn(keyword, count)
-    naver = keyword_naver(naver_keyword, count)
+    dangn = keyword_dangn(keyword)
+    naver = keyword_joongna(naver_keyword)
     bunjang = np.array(bunjang)
     dangn = np.array(dangn)
     naver = np.array(naver)
@@ -47,9 +47,10 @@ def keyword_joongna(search_keyword):
     options.add_argument('headless')
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
-    driver = webdriver.Chrome(chromedriver_autoinstaller.install())#, options=options)
+    driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
     driver.implicitly_wait(3)
     driver.get('https://web.joongna.com/search?keyword=' + search_keyword + '&page=1')
+    sleep(1)
 
     html = driver.page_source
     soup = BeautifulSoup(html, 'html.parser')
@@ -194,7 +195,7 @@ def keyword_joongna(search_keyword):
 #             ## 이미지주소 가져옴
 
 
-def keyword_dangn(keyword, count):
+def keyword_dangn(keyword):
     # 이모티콘 제거하기
     pattern = re.compile("["
                          u"\U00010000-\U0010FFFF"  # BMP characters 이외
@@ -447,8 +448,8 @@ def set_db(platform, pattern,name,  upload_time, address, price, link, img_link,
     # conn.commit()
     return result
 
-def remove_db():
-    print("DB제거 들어간다")
+# def remove_db():
+#     print("DB제거 들어간다")
     # conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
 
     # # DB 커서 만들기
@@ -463,5 +464,5 @@ def remove_db():
 #keyword_naver('아이폰13', 200)
 
 
-keyword_dangn("인천 아이패드 에어4", 1)
-print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
+# keyword_joongna("아이패드 에어4")#, 1)
+# print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
