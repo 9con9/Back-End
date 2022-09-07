@@ -44,7 +44,8 @@ def keyword_joongna(search_keyword):
     result = []
 
     options = webdriver.ChromeOptions()
-    options.add_argument('headless')
+    options.add_argument('--window-size=1920x1080')
+    options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
     driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
