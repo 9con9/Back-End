@@ -1,6 +1,7 @@
 # from distutils.command.upload import upload
 # import pymysql
 # import requests
+from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 import re
 from selenium import webdriver
@@ -225,7 +226,7 @@ def keyword_dangn(keyword):
     driver.implicitly_wait(time_to_wait=5)
     driver.get(url)
     for _ in range(8):
-        driver.find_element("xpath", "//*[@id=\"result\"]/div[1]/div[2]/span").click()
+        driver.find_element(By.XPATH, "//*[@id=\"result\"]/div[1]/div[2]/span").click()
         sleep(1)
     page = driver.page_source
     soup = BeautifulSoup(page, "html.parser")
@@ -470,5 +471,5 @@ def set_db(platform, pattern,name,  upload_time, address, price, link, img_link,
 #keyword_naver('아이폰13', 200)
 
 
-# keyword_joongna("아이패드 에어4")#, 1)
+keyword_dangn("아이패드 에어4")#, 1)
 # print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
