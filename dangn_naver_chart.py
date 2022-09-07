@@ -1,4 +1,4 @@
-from distutils.command.upload import upload
+# from distutils.command.upload import upload
 # import pymysql
 # import requests
 from bs4 import BeautifulSoup
@@ -22,8 +22,8 @@ def get_data(keyword):
     naver_keyword = " ".join(naver_keyword_list)
     print("나 네이버 키워드" ,naver_keyword)
     print(naver_keyword)
-    dangn = keyword_dangn(keyword, count)
-    naver = keyword_naver(naver_keyword, count)
+    dangn = keyword_dangn(keyword)
+    naver = keyword_joongna(naver_keyword)
     bunjang = np.array(bunjang)
     dangn = np.array(dangn)
     naver = np.array(naver)
@@ -44,12 +44,16 @@ def keyword_joongna(search_keyword):
     result = []
 
     options = webdriver.ChromeOptions()
-    options.add_argument('headless')
+    options.add_argument('--window-size=1920x1080')
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
-    driver = webdriver.Chrome(chromedriver_autoinstaller.install())#, options=options)
+    driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
     driver.implicitly_wait(3)
     driver.get('https://web.joongna.com/search?keyword=' + search_keyword + '&page=1')
+    sleep(1)
 
     html = driver.page_source
     soup = BeautifulSoup(html, 'html.parser')
@@ -84,11 +88,15 @@ def keyword_joongna(search_keyword):
                     for time in time_div:
                         spans = time.find_all('span')
                         flag = True
-                        print(time)
+                        # print(time)
                         for span in spans:
                             if len(time) == 1:
                                 tim = span.get_text()
-                                upload_time_list.append(tim)
+                                if tim[1] in '시' or tim[2] in '시' or tim[1] in '분' or tim[2] in '분' or \
+                                        tim[1] in '초' or tim[2] in '초':
+                                    upload_time_list.append('오늘')
+                                else:
+                                    upload_time_list.append(tim)
                                 address_list.append('None')
                             else:
                                 if flag is True:
@@ -97,11 +105,17 @@ def keyword_joongna(search_keyword):
                                     flag = False
                                 else:
                                     tim = span.get_text()
-                                    upload_time_list.append(tim)
+                                    if tim[1] in '시' or tim[2] in '시' or tim[1] in '분' or tim[2] in '분' or \
+                                            tim[1] in '초' or tim[2] in '초':
+                                        upload_time_list.append('오늘')
+                                    else:
+                                        upload_time_list.append(tim)
 
-    print(len(name_list), upload_time_list, len(price_list), len(link_list), len(img_link_list), address_list)
+    # print(len(name_list), upload_time_list, len(price_list), len(link_list), len(img_link_list), address_list)
     for check in upload_time_list:
-        if not ((int(check[0:1]) < 8) and (check[2:3] != "일") or (check[1:2] == "시") or (check[2:3] == "시") or (check[1:2] == "분") or (check[2:3] == "분")):
+        if check == "오늘":
+            pass
+        elif not ((int(check[0:1]) < 8) and (check[2:3] != "일") or (check[1:2] == "시") or (check[2:3] == "시") or (check[1:2] == "분") or (check[2:3] == "분")):
             index = upload_time_list.index(check)
             del name_list[index:]
             del upload_time_list[index:]
@@ -111,7 +125,8 @@ def keyword_joongna(search_keyword):
             del address_list[index:]
             break;
 
-    print(len(name_list))
+    for a in upload_time_list:
+        print(a)
 
     temp_list = price_list
     np_temp = np.array(temp_list, dtype=np.int64)
@@ -194,7 +209,7 @@ def keyword_joongna(search_keyword):
 #             ## 이미지주소 가져옴
 
 
-def keyword_dangn(keyword, count):
+def keyword_dangn(keyword):
     # 이모티콘 제거하기
     pattern = re.compile("["
                          u"\U00010000-\U0010FFFF"  # BMP characters 이외
@@ -210,7 +225,16 @@ def keyword_dangn(keyword, count):
     # 옵션 생성
     options = webdriver.ChromeOptions()
     # 창 숨기는 옵션 추가
-    options.add_argument("headless")
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--disable-extensions")
+    options.add_argument("--proxy-server='direct://'")
+    options.add_argument("--proxy-bypass-list=*")
+    options.add_argument("--start-maximized")
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--ignore-certificate-errors')
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
     # 셀레니움
@@ -218,8 +242,11 @@ def keyword_dangn(keyword, count):
     driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
     driver.implicitly_wait(time_to_wait=5)
     driver.get(url)
+    arr = []
     for _ in range(8):
-        driver.find_element("xpath", "//*[@id=\"result\"]/div[1]/div[2]/span").click()
+        arr.append(driver.find_element('xpath', "//*[@id=\"result\"]/div[1]/div[2]/span"))
+    for ele in range(8):
+        arr[ele].click()
     page = driver.page_source
     soup = BeautifulSoup(page, "html.parser")
     driver.implicitly_wait(time_to_wait=5)
@@ -275,12 +302,20 @@ def keyword_dangn(keyword, count):
             count += 1
             print(temp_upload_time)
         if temp_upload_time[0:2] == "끌올":
-            upload_time_list.append(temp_upload_time[3:])
+            if temp_upload_time[1] in '시' or temp_upload_time[2] in '시' or temp_upload_time[1] in '분' \
+                    or temp_upload_time[2] in '분' or temp_upload_time[1] in '초' or temp_upload_time[2] in '초':
+                upload_time_list.append('오늘')
+            else:
+                upload_time_list.append(temp_upload_time)
         else:
-            upload_time_list.append(temp_upload_time)
+            if temp_upload_time[1] in '시' or temp_upload_time[2] in '시' or temp_upload_time[1] in '분' \
+                    or temp_upload_time[2] in '분' or temp_upload_time[1] in '초' or temp_upload_time[2] in '초':
+                upload_time_list.append('오늘')
+            else:
+                upload_time_list.append(temp_upload_time)
         index += 1
         print(index)
-        print(temp_upload_time)
+        print(upload_time_list[-1])
 
     if count == 4:
         del img_link_list[index:]
@@ -289,13 +324,51 @@ def keyword_dangn(keyword, count):
         del address_list[index:]
         del link_list[index:]
 
+    index = 0
+    while index != len(upload_time_list):
+        print(upload_time_list[index])
+        if upload_time_list[index] == "오늘":
+            index += 1
+            print("인덱스 :" , index)
+        elif ((upload_time_list[index][1:2] == "달") or (upload_time_list[index][2:3] == "달")):
+            del name_list[index]
+            del price_list[index]
+            del address_list[index]
+            del img_link_list[index]
+            del link_list[index]
+            del upload_time_list[index]
+            print(index, " 제거 완료")
+        elif not ((int(upload_time_list[index][0:1]) < 8) and (upload_time_list[index][2:3] != "일") or (upload_time_list[index][1:2] == "시") or (
+                upload_time_list[index][2:3] == "시")):
+            del name_list[index]
+            del price_list[index]
+            del address_list[index]
+            del img_link_list[index]
+            del link_list[index]
+            del upload_time_list[index]
+            print(index, " 제거 완료")
+        else:
+            index += 1
+            print("인덱스 :", index)
+
+        print(len(name_list))
+        print(len(price_list))
+        print(len(link_list))
+        print(len(img_link_list))
+        print(len(address_list))
+        print(len(upload_time_list))
+        print()
+        print()
+
+    for a in upload_time_list:
+        print(a)
+
 
 
     print(len(name_list))
     print(len(price_list))
     print(len(link_list))
     print(len(img_link_list))
-    print(len(name_list))
     print(len(address_list))
     print(len(upload_time_list))
 
@@ -447,8 +520,8 @@ def set_db(platform, pattern,name,  upload_time, address, price, link, img_link,
     # conn.commit()
     return result
 
-def remove_db():
-    print("DB제거 들어간다")
+# def remove_db():
+#     print("DB제거 들어간다")
     # conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
 
     # # DB 커서 만들기
@@ -463,5 +536,5 @@ def remove_db():
 #keyword_naver('아이폰13', 200)
 
 
-keyword_dangn("인천 아이패드 에어4", 1)
+keyword_joongna("아이패드 에어4")
 print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
