@@ -231,8 +231,11 @@ def keyword_dangn(keyword):
     driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
     driver.implicitly_wait(time_to_wait=5)
     driver.get(url)
+    arr = []
     for _ in range(8):
-        driver.find_element('xpath', "//*[@id=\"result\"]/div[1]/div[2]/span").click()
+        arr.append(driver.find_element('xpath', "//*[@id=\"result\"]/div[1]/div[2]/span"))
+    for ele in range(8):
+        ele[i].click()
     page = driver.page_source
     soup = BeautifulSoup(page, "html.parser")
     driver.implicitly_wait(time_to_wait=5)
