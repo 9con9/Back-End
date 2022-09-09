@@ -1,6 +1,5 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
-# import pymysql
 import chromedriver_autoinstaller
 import re
 import numpy as np
@@ -63,31 +62,17 @@ def get_bunjang(search_keyword):
                     time_div = div.find_all(attrs={'class': "sc-iSDuPN iJqnGY"})
                     for time in time_div:
                         upload_time_list.append(time.get_text())
-
-    # conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
-
-    # cursor = conn.cursor(pymysql.cursors.DictCursor)
-    
-    # cursor.execute("TRUNCATE condb.bunjang")
-    
-    # cursor.execute('SET NAMES utf8mb4')
-    # cursor.execute("SET CHARACTER SET utf8mb4")
-    # cursor.execute("SET character_set_connection=utf8mb4")
-
-    # sql = "INSERT INTO condb.bunjang VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-    print(len(name_list))
+                        
     temp_list = price_list
     np_temp = np.array(temp_list, dtype=np.int64)
     Q3, Q1, Q2 = np.percentile(np_temp, [75, 25, 50])
     IQR = Q3 - Q1
-    print(Q3, Q1, Q2, IQR)
     if IQR > Q2:
         low_np = list(np_temp[Q1 > np_temp])
         high_np = list(np_temp[Q3 < np_temp])
     else:
-        low_np = list(np_temp[Q1-0.4*IQR > np_temp])
+        low_np = list(np_temp[Q1-0.2*IQR > np_temp])
         high_np = list(np_temp[Q3+0.4*IQR < np_temp])
-    print(Q3+1*IQR, Q1-1*IQR, Q2, IQR)
 
     for i in range(len(name_list)):
         prices = int(re.sub(r'[^0-9]', '', price_list[i]))

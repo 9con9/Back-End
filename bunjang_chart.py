@@ -1,7 +1,6 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import re
-# import pymysql
 import chromedriver_autoinstaller
 import numpy as np
 
@@ -19,13 +18,10 @@ def get_bunjang(search_keyword):
     driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
     driver.implicitly_wait(3)
     
-    first = True
     temp_list = []
     count = 1
     
     for page in range(1, 3):
-        if page != 1:
-            first = False
             
         driver.get('https://m.bunjang.co.kr/search/products?q=' + search_keyword + '&order=' + "date" + '&page=' + str(page))
 
@@ -76,23 +72,10 @@ def get_bunjang(search_keyword):
                                 upload_time_list.append('오늘')
                             else:
                                 upload_time_list.append(time)
-
-        # conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
-
-        # cursor = conn.cursor(pymysql.cursors.DictCursor)
-        
-        # if first is True:
-        #     cursor.execute("TRUNCATE condb.chart_usersells")
-        
-        # cursor.execute('SET NAMES utf8mb4')
-        # cursor.execute("SET CHARACTER SET utf8mb4")
-        # cursor.execute("SET character_set_connection=utf8mb4")
-
-        # sql = "INSERT INTO condb.chart_usersells VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        
+                                
         temp_list = price_list
         np_temp = np.array(temp_list, dtype=np.int64)
-        Q3, Q1, Q2 = np.percentile(np_temp, [80, 20, 50])
+        Q3, Q1, Q2 = np.percentile(np_temp, [75, 25, 50])
         IQR = Q3 - Q1
         if IQR > Q2:
             low_np = list(np_temp[Q1 > np_temp])
@@ -105,27 +88,18 @@ def get_bunjang(search_keyword):
             if upload_time_list[i] not in '오늘':
                 if (upload_time_list[i][1] != '주') and (upload_time_list[i][1] != '달') and (upload_time_list[i][2] != '달' and (upload_time_list[i][1] != '년')):
                     if int(price_list[i]) in low_np:
-                        # cursor.execute(sql, (count, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(price_list[i]), str(link_list[i]), img_link_list[i], 'low'))
-                        # count += 1
                         pass
                     elif int(price_list[i]) in high_np:
-                        # cursor.execute(sql, (count, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(price_list[i]), str(link_list[i]), img_link_list[i], 'high'))
-                        # count += 1
                         pass
                     else:
                         result.append([count, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(price_list[i]), str(link_list[i]), img_link_list[i], 'normal'])
                         count += 1
             else:
                 if int(price_list[i]) in low_np:
-                        # cursor.execute(sql, (count, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(price_list[i]), str(link_list[i]), img_link_list[i], 'low'))
-                        # count += 1
                         pass
                 elif int(price_list[i]) in high_np:
-                    # cursor.execute(sql, (count, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(price_list[i]), str(link_list[i]), img_link_list[i], 'high'))
-                    # count += 1
                     pass
                 else:
                     result.append([count, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(price_list[i]), str(link_list[i]), img_link_list[i], 'normal'])
                     count += 1
-        # conn.commit()
     return result

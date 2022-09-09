@@ -1,6 +1,3 @@
-from ast import keyword
-import pymysql
-import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import chromedriver_autoinstaller
@@ -20,8 +17,13 @@ category = {
 
 def get_bunjang(search_keyword):
     
+    result = []
+    
     options = webdriver.ChromeOptions()
-    options.add_argument('headless')
+    options.add_argument('--window-size=1920x1080')
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
     
     driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
@@ -75,20 +77,8 @@ def get_bunjang(search_keyword):
                         for time in time_div:
                             upload_time_list.append(time.get_text())
 
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="", db="condb", use_unicode=True)
-
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
-    
-    cursor.execute("TRUNCATE condb.bunjang")
-    
-    cursor.execute('SET NAMES utf8mb4')
-    cursor.execute("SET CHARACTER SET utf8mb4")
-    cursor.execute("SET character_set_connection=utf8mb4")
-
-    sql = "INSERT INTO condb.bunjang VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-
     for i in range(len(name_list)):
         prices = re.sub(r'[^0-9]', '', price_list[i])
-        cursor.execute(sql, (i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'normal'))
+        result.append([i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'normal'])
 
-    conn.commit()
+    return result

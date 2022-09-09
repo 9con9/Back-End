@@ -1,5 +1,3 @@
-# import pymysql
-# import requests
 from bs4 import BeautifulSoup
 import re
 from selenium import webdriver
@@ -62,7 +60,6 @@ def get_dangn(keyword):
             price_p = art.find_all(attrs={'class': "article-price"})
             for pr in price_p:
                 prices = re.sub(r'[^0-9]', '', pr.get_text())
-                print(prices)
                 if len(prices) == 0:
                     price_list.append(0)
                 else:
@@ -75,17 +72,7 @@ def get_dangn(keyword):
             place_p = art.find_all(attrs={'class': "article-region-name"})
             for place in place_p:
                 address_list.append(place.get_text().strip())
-
-    # start = time.time()  # 시작 시간 저장
-    # for link in link_list:
-    #     driver.get(link)
-    #     page = driver.page_source
-    #     soup = BeautifulSoup(page, "html.parser")
-    #     upload = soup.select_one("#article-category > time").text.strip()
-    #     upload_time_list.append(upload)
-    # print("time :", time.time() - start)
-
-    start = time.time()  # 시작 시간 저장
+                
     for i in range(len(name_list)):
         driver.get(link_list[i])
         page = driver.page_source
@@ -95,8 +82,6 @@ def get_dangn(keyword):
             upload_time_list.append(temp_upload_time[3:])
         else:
             upload_time_list.append(temp_upload_time)
-        print(temp_upload_time)
-    print("time :", time.time() - start)
 
     temp_list = price_list
     np_temp = np.array(temp_list, dtype=np.int64)
@@ -119,8 +104,4 @@ def get_dangn(keyword):
         else:
             result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i],
                            str(link_list[i]), img_link_list[i], 'normal'])
-            #result.append([i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time_list[i], address_list[i], price_list[i],
-                          # str(link[i]), img_link_list[i], 'normal'])
     return result
-    # conn.commit()
-    print("time :", time.time() - start)

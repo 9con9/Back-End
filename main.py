@@ -3,9 +3,9 @@ import dangn
 import joongna
 import bunjang
 import dangn_naver_chart
-# import dangn_category
-# import naver_category
-# import bunjang_category
+import dangn_category
+import joongna_category
+import bunjang_category
 import numpy as np
 import pandas as pd
 from flask import Flask 
@@ -32,9 +32,50 @@ def startParsing():
 
     for check in categoly:
         if keyword == check:
-            # dangn_category.get_dangn(keyword)
-            # naver_category.get_naver(keyword)
-            # bunjang_category.get_bunjang(keyword)
+            parsing_list = []
+            result_list = []
+            result_dangn = dangn_category.get_dangn(keyword)
+            result_bunjang = bunjang_category.get_bunjang(keyword)
+            result_joongna = joongna_category.get_joongna(keyword)
+            print(result_joongna)
+            all = np.concatenate((result_dangn, result_bunjang, result_joongna))
+            all = pd.DataFrame(all)
+            
+            minute = all[all[3].str.contains('분')]
+            minute[3] = minute[3].replace(r'[^0-9]', '', regex=True)
+            minute[3] = pd.to_numeric(minute[3])
+            minute.sort_values(by=[3], ascending=True, inplace=True)
+            minute[3] = minute[3].map('{}분 전'.format)
+            minute = minute.to_numpy()
+            
+            hour = all[all[3].str.contains('시간')]
+            hour[3] = hour[3].replace(r'[^0-9]', '', regex=True)
+            hour[3] = pd.to_numeric(hour[3])
+            hour.sort_values(by=[3], ascending=True, inplace=True)
+            hour[3] = hour[3].map('{}시간 전'.format)
+            hour = hour.to_numpy()
+            
+            day = all[all[3].str.contains('일')]
+            day[3] = day[3].replace(r'[^0-9]', '', regex=True)
+            day[3] = pd.to_numeric(day[3])
+            day.sort_values(by=[3], ascending=True, inplace=True)
+            day[3] = day[3].map('{}일 전'.format)
+            day = day.to_numpy()
+            
+            month = all[all[3].str.contains('달')]
+            month[3] = month[3].replace(r'[^0-9]', '', regex=True)
+            month[3] = pd.to_numeric(month[3])
+            month.sort_values(by=[3], ascending=True, inplace=True)
+            month[3] = month[3].map('{}달 전'.format)
+            month = month.to_numpy()
+            
+            all = np.concatenate((minute, hour, day, month))
+            parsing_list = list(all)
+            
+            for parsing in parsing_list:
+                results = {"index":parsing[0], "platform":parsing[1], "name":parsing[2], "time":parsing[3], "place":parsing[4],
+                            "price":parsing[5], "link":parsing[6], "img_link":parsing[7], "outlier":parsing[8]}
+                result_list.append(results)
             break
     else:
         parsing_list = []

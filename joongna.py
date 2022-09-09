@@ -1,5 +1,3 @@
-from ctypes import addressof
-from email.mime import image
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import chromedriver_autoinstaller
@@ -53,7 +51,6 @@ def get_joongna(search_keyword):
                     for time in time_div:
                         spans = time.find_all('span')
                         flag = True
-                        print(time)
                         for span in spans:
                             if len(time) == 1:
                                 tim = span.get_text()
@@ -72,14 +69,12 @@ def get_joongna(search_keyword):
     np_temp = np.array(temp_list, dtype=np.int64)
     Q3, Q1, Q2 = np.percentile(np_temp, [75, 25, 50])
     IQR = Q3 - Q1
-    print(Q3, Q1, Q2, IQR)
     if IQR > Q2:
         low_np = list(np_temp[Q1 > np_temp])
         high_np = list(np_temp[Q3 < np_temp])
     else:
-        low_np = list(np_temp[Q1-0.4*IQR > np_temp])
+        low_np = list(np_temp[Q1-0.2*IQR > np_temp])
         high_np = list(np_temp[Q3+0.4*IQR < np_temp])
-    print(Q3+1*IQR, Q1-1*IQR, Q2, IQR)
 
     for i in range(len(name_list)):
         prices = int(re.sub(r'[^0-9]', '', price_list[i]))
