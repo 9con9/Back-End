@@ -38,7 +38,7 @@ def startParsing():
             result_list = []
             result_dangn = dangn_category.get_dangn(keyword)
             result_bunjang = bunjang_category.get_bunjang(keyword)
-            result_joongna = joongna_category.get_joongna(keyword)
+            result_joongna = joongna_category.get_joongna(naver_keyword)
             all = np.concatenate((result_dangn, result_bunjang, result_joongna))
             all = pd.DataFrame(all)
             
