@@ -39,7 +39,7 @@ def get_dangn(keyword):
     # 변수 초기화
     end_number = 0
     name_list, address_list, price_list, link_list, img_link_list, upload_time_list = [], [], [], [], [], []
-    print(end_number)
+    # print(end_number)
 
 
     for check in categoly:
@@ -78,14 +78,17 @@ def get_dangn(keyword):
 
                     imgs = link.find('img')
                     img = imgs['src']
-
                     img_link_list.append(img)
+
 
                 price_p = art.find_all(attrs={'class': "article-price"})
                 for pr in price_p:
-                    prices = re.sub(r'[^0-9]', '', pr.get_text().strip())
-                    print(prices)
-                    price_list.append(prices)
+                    prices = re.sub(r'[^0-9]', '', pr.get_text())
+                    # print(prices)
+                    if len(prices) == 0:
+                        price_list.append(0)
+                    else:
+                        price_list.append(int(prices))
 
                 name_s = art.find_all(attrs={'class': "article-title"})
                 for name in name_s:
@@ -94,31 +97,14 @@ def get_dangn(keyword):
                 place_p = art.find_all(attrs={'class': "article-region-name"})
                 for place in place_p:
                     address_list.append(place.get_text().strip())
+        del img_link_list[(link_end+1):]
+        del price_list[(link_end+1):]
+        del name_list[(link_end+1):]
+        del address_list[(link_end+1):]
+        del link_list[(link_end+1):]
 
-        # for i in range(2, end_number+1):
-        #     print(i)
-        #
-        #     name.append(
-        #         driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/div/span[1]")[
-        #             0].text)
-        #     address.append(
-        #         driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[1]")[
-        #             0].text.strip())
-        #     if len(re.sub(r'[^0-9]', '', driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[2]")[
-        #         0].text.strip())) == 0:
-        #         price.append('0')
-        #     else:
-        #         price.append(re.sub(r'[^0-9]', '', driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[2]/p[2]")[
-        #         0].text.strip()))
-        #     link.append(
-        #         driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a")[0].get_attribute(
-        #             'href'))
-        #     img_link.append(
-        #         driver.find_elements_by_xpath("//*[@id='flea-market-wrap']/article[" + str(i) + "]/a/div[1]/img")[
-        #             0].get_attribute("src"))
-
-
-        for i in range(link_start , link_end):
+        for i in range(link_start , link_end+1):
+            print("나는 i번째 링크들갈거야 : ", str(i))
             driver.get(link_list[i])
             page = driver.page_source
             soup = BeautifulSoup(page, "html.parser")
@@ -128,22 +114,46 @@ def get_dangn(keyword):
             else:
                 upload_time_list.append(temp_upload_time)
 
-        link_start = link_end
-        link_end += (end_number - 1)
 
-        print("업로드 타임: ", upload_time_list)
-        print("이름들 : ", name_list)
+        link_start = link_end + 1
+        link_end += end_number
         print(link_start)
         print(link_end)
+        print(len(upload_time_list))
+        print(len(name_list))
+
+        # # print("업로드 타임: ", upload_time_list)
+        # # print("이름들 : ", name_list)
+        # print(link_start)
+        # print(link_end)
+        # print()
+        # print(len(name_list))
+        # print(len(price_list))
+        # print(len(link_list))
+        # print(len(img_link_list))
+        # print(len(name_list))
+        # print(len(address_list))
+        # print(len(upload_time_list))
+        # print()
 
 
+    # print(len(name_list))
+    # print(len(price_list))
+    # print(len(link_list))
+    # print(len(img_link_list))
+    # print(len(name_list))
+    # print(len(address_list))
 
-    for i in range(len(name)):
-        result.append([i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time_list[i], address_list[i], price_list[i], str(link[i]), img_link_list[i], 'normal'])
-
-
+    for i in range(len(name_list)):
+        result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i], str(link_list[i]), img_link_list[i], 'normal'])
+    # print()
+    # print()
+    # print()
+    # print()
+    # for value in result:
+    #     print(value)
+    #     print()
     # print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
-    print(result)
 
 
-get_dangn("디지털기기")
+# get_dangn("디지털기기")
