@@ -196,7 +196,6 @@ def keyword_dangn(keyword):
             price_p = art.find_all(attrs={'class': "article-price"})
             for pr in price_p:
                 prices = re.sub(r'[^0-9]', '', pr.get_text())
-                print(prices)
                 if len(prices) == 0:
                     price_list.append(0)
                 else:
@@ -220,7 +219,6 @@ def keyword_dangn(keyword):
         temp_upload_time = temp_upload_time.lstrip("끌올 ")
         if not ((int(temp_upload_time[0:1]) < 8) and (temp_upload_time[2:3] != "일") or (temp_upload_time[1:2] == "시") or (temp_upload_time[2:3] == "시")):
             count += 1
-            print(temp_upload_time)
         if temp_upload_time[0:2] == "끌올":
             if temp_upload_time[1] in '시' or temp_upload_time[2] in '시' or temp_upload_time[1] in '분' \
                     or temp_upload_time[2] in '분' or temp_upload_time[1] in '초' or temp_upload_time[2] in '초':
