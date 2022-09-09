@@ -10,6 +10,7 @@ import time
 from time import sleep
 import bunjang_chart as bj
 import numpy as np
+import pandas as pd
 
 start = time.time()  # 시작 시간 저장
 def get_data(keyword):
@@ -27,8 +28,11 @@ def get_data(keyword):
     bunjang = np.array(bunjang)
     dangn = np.array(dangn)
     naver = np.array(naver)
+    bunjang_pd = pd.DataFrame(bunjang)
+    # print(bunjang_pd.head())
+    # print(bunjang.shape, dangn.shape, naver.shape)
     all = list(np.concatenate((bunjang, dangn, naver)))
-    result.extend(naver, dangn, bunjang, all)
+    result.extend([naver, dangn, bunjang, all])
     # remove_db()
     return result
 
@@ -123,7 +127,7 @@ def keyword_joongna(search_keyword):
             del link_list[index:]
             del img_link_list[index:]
             del address_list[index:]
-            break;
+            break
 
     for a in upload_time_list:
         print(a)
@@ -510,7 +514,7 @@ def set_db(platform, pattern,name,  upload_time, address, price, link, img_link,
             # cursor.execute(sql,(count + 1, platform, pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]),img_link[i], 'high'))
             pass
         else:
-            result.append([count + 1, platform, pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]),img_link[i], 'normal', keyword])
+            result.append([count + 1, platform, pattern.sub(r"", name[i]), upload_time[i], address[i], price[i], str(link[i]),img_link[i], 'normal'])
         print(str(count) + "번쨰 디비들어간다")
         count += 1
     print(count)
@@ -533,5 +537,5 @@ def set_db(platform, pattern,name,  upload_time, address, price, link, img_link,
 #keyword_naver('아이폰13', 200)
 
 
-keyword_dangn("아이패드 에어4")#, 1)
+# get_data("인천 아이패드 에어4")#, 1)
 # print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
