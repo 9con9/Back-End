@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from flask import Flask 
 from flask_cors import CORS
+import time
 
 app = Flask(__name__)
 CORS(app)
@@ -18,16 +19,17 @@ categoly = ["디지털기기", "가구/인테리어", "유아용품", "스포츠
 
 @app.route('/search', methods=['GET'])
 def startParsing():
+    
+    start = time.time()  # 시작 시간 저장
+    
     keywords = flask.request.args['value']
     keyword = str(keywords)
-    print(keyword)
 
     ###
     spl = keyword.split()
     list_spl = [k for k in spl]
     naver_keyword_list = list_spl[1:]
     naver_keyword = " ".join(naver_keyword_list)
-    print(naver_keyword)
     ###
 
     for check in categoly:
@@ -37,7 +39,6 @@ def startParsing():
             result_dangn = dangn_category.get_dangn(keyword)
             result_bunjang = bunjang_category.get_bunjang(keyword)
             result_joongna = joongna_category.get_joongna(keyword)
-            print(result_joongna)
             all = np.concatenate((result_dangn, result_bunjang, result_joongna))
             all = pd.DataFrame(all)
             
@@ -83,7 +84,6 @@ def startParsing():
         result_dangn = dangn.get_dangn(keyword)
         result_bunjang = bunjang.get_bunjang(keyword)
         result_joongna = joongna.get_joongna(naver_keyword)
-        print(result_joongna)
         all = np.concatenate((result_dangn, result_bunjang, result_joongna))
         all = pd.DataFrame(all)
         
@@ -123,20 +123,22 @@ def startParsing():
                         "price":parsing[5], "link":parsing[6], "img_link":parsing[7], "outlier":parsing[8]}
             result_list.append(results)
             
+    print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
     return result_list
 
 @app.route('/chart', methods=['GET'])
 def startParsing_chart():
+    
+    start = time.time()  # 시작 시간 저장
+    
     keywords = flask.request.args['value']
     keyword = str(keywords)
-    print(keyword)
 
     ###
     spl = keyword.split()
     list_spl = [k for k in spl]
     naver_keyword_list = list_spl[1:]
     naver_keyword = " ".join(naver_keyword_list)
-    print(naver_keyword)
     ###
     
     chart_result = []
@@ -206,6 +208,8 @@ def startParsing_chart():
                 result_dict['date'] = chart
             else:
                 result_dict['date'] = chart
+                
+    print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
     return result_dict
 
 if __name__ == '__main__':
