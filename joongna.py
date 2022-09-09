@@ -68,46 +68,6 @@ def get_joongna(search_keyword):
                                     tim = span.get_text()
                                     upload_time_list.append(tim)
                                     
-    print(len(name_list), upload_time_list, len(price_list), len(link_list), len(img_link_list), address_list)
-    # for i in items:
-    #     divs = i.find_all("div")
-    #     for div in divs:
-    #         link_div = div.find_all(attrs={'class': 'sc-chbbiW dlCCUH'})
-    #         for link in link_div:
-    #             isAD = div.find_all(attrs={'class':'sc-jXQZqI fwwrJI'})
-    #             AD = []
-    #             for ad in isAD:
-    #                 if ad.get_text() == 'AD':
-    #                     AD.append(ad)
-    #             if len(AD) == 0:
-    #                 href = link.attrs['href']
-                    
-    #                 link_list.append("https://bunjang.co.kr" + href)
-                    
-    #                 imgs = link.find('img')
-    #                 img = imgs['src']
-
-    #                 img_link_list.append(img)
-
-    #                 price_div = div.find_all(attrs={'class': "sc-gmeYpB iBMbn"})
-    #                 if len(price_div) == 0:
-    #                         price_list.append('0')
-    #                 else:
-    #                     for price in price_div:
-    #                         prices = re.sub(r'[^0-9]', '', price.get_text())
-    #                         price_list.append(prices)
-    #                 name_div = div.find_all(attrs={'class': "sc-fcdeBU iVCsji"})
-    #                 for name in name_div:
-    #                     name_list.append(name.get_text())
-    #                 place_div = div.find_all(attrs={'class': "sc-kZmsYB eylVEY"})
-    #                 for place in place_div:
-    #                     address_list.append(place.get_text())
-    #                 time_div = div.find_all(attrs={'class': "sc-iSDuPN iJqnGY"})
-    #                 for time in time_div:
-    #                     upload_time_list.append(time.get_text())
-    # print(name_list, upload_time_list, price_list, link_list, img_link_list, address_list)
-                        
-    # print(len(name_list))
     temp_list = price_list
     np_temp = np.array(temp_list, dtype=np.int64)
     Q3, Q1, Q2 = np.percentile(np_temp, [75, 25, 50])
@@ -124,9 +84,9 @@ def get_joongna(search_keyword):
     for i in range(len(name_list)):
         prices = int(re.sub(r'[^0-9]', '', price_list[i]))
         if prices in low_np:
-            result.append([i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'low'])
+            result.append([i+1, '중고 나라', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'low'])
         elif prices in high_np:
-            result.append([i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'high'])
+            result.append([i+1, '중고 나라', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'high'])
         else:
-            result.append([i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'normal'])
+            result.append([i+1, '중고 나라', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'normal'])
     return result
