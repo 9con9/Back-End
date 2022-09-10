@@ -109,3 +109,5 @@ def get_dangn(keyword):
             result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i],
                            str(link_list[i]), img_link_list[i], 'normal'])
     return result
+
+print(get_dangn('천안 아이패드 에어4'))
