@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
-import chromedriver_autoinstaller
+from time import sleep
+import numpy as np
+import pandas as pd
 import re
 
 category = {
@@ -37,7 +39,7 @@ def get_bunjang(search_keyword):
     
     for key in category[search_keyword]:
         driver.get('https://m.bunjang.co.kr/categories/' + str(key) + '?page=1' + "&req_ref=popular_category")
-        driver.implicitly_wait(3)
+        sleep(3)
         
         html = driver.page_source
         soup = BeautifulSoup(html, 'html.parser')
@@ -68,7 +70,8 @@ def get_bunjang(search_keyword):
                             price_list.append('0')
                         else:
                             for price in price_div:
-                                price_list.append(price.get_text())
+                                prices = re.sub(r'[^0-9]', '', price.get_text())
+                                price_list.append(prices)
                         
                         name_div = div.find_all(attrs={'class': 'sc-chbbiW hmkmpv'})
                         for name in name_div:
@@ -81,9 +84,28 @@ def get_bunjang(search_keyword):
                         time_div = div.find_all(attrs={'class': 'sc-gmeYpB fxEeIU'})
                         for time in time_div:
                             upload_time_list.append(time.get_text())
+                            
+    temp_list = price_list
+    np_temp = np.array(temp_list, dtype=np.int64)
+    pd_temp = pd.Series(np_temp)
+    Q3 = pd_temp.quantile(.75)
+    Q1 = pd_temp.quantile(.25)
+    Q2 = pd_temp.quantile(.5)
+    IQR = Q3 - Q1
+    
+    if IQR > Q2:
+        low_np = list(np_temp[Q1 > np_temp])
+        high_np = list(np_temp[Q3 < np_temp])
+    else:
+        low_np = list(np_temp[Q1-0.2*IQR > np_temp])
+        high_np = list(np_temp[Q3+0.4*IQR < np_temp])
 
     for i in range(len(name_list)):
-        prices = re.sub(r'[^0-9]', '', price_list[i])
-        result.append([i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'normal'])
-
+        prices = price_list[i]
+        if prices in low_np:
+            result.append([i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'low'])
+        elif prices in high_np:
+            result.append([i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'high'])
+        else:
+            result.append([i+1, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'normal'])
     return result

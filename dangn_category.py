@@ -2,7 +2,9 @@ from bs4 import BeautifulSoup
 import re
 from selenium import webdriver
 import time
-import chromedriver_autoinstaller
+import numpy as np
+import pandas as pd
+
 start = time.time()  # 시작 시간 저장
 
 cccc = ["디지털기기", "가구/인테리어", "유아용품", "스포츠/레저", "의류", "도서/티켓/문구", "반려동물", "미용", "콘솔게임"]
@@ -112,10 +114,27 @@ def get_dangn(keyword):
                 upload_time_list.append(temp_upload_time)
 
 
-        link_start = link_end + 1
-        link_end += end_number
+    temp_list = price_list
+    np_temp = np.array(temp_list, dtype=np.int64)
+    pd_temp = pd.Series(np_temp)
+    Q3 = pd_temp.quantile(.75)
+    Q1 = pd_temp.quantile(.25)
+    Q2 = pd_temp.quantile(.5)
+    IQR = Q3 - Q1
 
+    if IQR > Q2:
+        low_np = list(np_temp[Q1 > np_temp])
+        high_np = list(np_temp[Q3 < np_temp])
+    else:
+        low_np = list(np_temp[Q1-0.2*IQR > np_temp])
+        high_np = list(np_temp[Q3+0.4*IQR < np_temp])
+        
     for i in range(len(name_list)):
-        result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i], str(link_list[i]), img_link_list[i], 'normal'])
+        if prices in low_np:
+             result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i], str(link_list[i]), img_link_list[i], 'low'])
+        elif prices in high_np:
+             result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i], str(link_list[i]), img_link_list[i], 'high'])
+        else:
+            result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i], str(link_list[i]), img_link_list[i], 'normal'])
         
     return result
