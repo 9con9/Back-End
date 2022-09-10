@@ -20,8 +20,8 @@ def get_bunjang(search_keyword):
     
     path = '/usr/bin/chromedriver'
     driver = webdriver.Chrome(path, options=options)
-    driver.implicitly_wait(3)
     driver.get('https://m.bunjang.co.kr/search/products?q=' + search_keyword + '&order=' + "score" + '&page=1')
+    driver.implicitly_wait(3)
 
     html = driver.page_source
     soup = BeautifulSoup(html, 'html.parser')

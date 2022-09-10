@@ -61,10 +61,9 @@ def get_dangn(keyword):
         url = "https://www.daangn.com/search/" + key
 
         driver.get(url)
+        driver.implicitly_wait(time_to_wait=5)
         page = driver.page_source
         soup = BeautifulSoup(page, "html.parser")
-
-        driver.implicitly_wait(time_to_wait=5)
 
         items = soup.select("#flea-market-wrap")
 
