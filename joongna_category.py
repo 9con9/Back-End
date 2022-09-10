@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re
 import numpy as np
 import pandas as pd
+from time import sleep
 
 
 def get_joongna(search_keyword):
@@ -34,6 +35,8 @@ def get_joongna(search_keyword):
     driver = webdriver.Chrome(path, options=options)
     driver.get('https://web.joongna.com/search?category=' + str(categoly_number[-1]) + '&page=1')
     driver.implicitly_wait(3)
+    sleep(3)
+    
 
     html = driver.page_source
     soup = BeautifulSoup(html, 'html.parser')

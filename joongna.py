@@ -98,5 +98,3 @@ def get_joongna(search_keyword):
         else:
             result.append([i+1, '중고 나라', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'normal'])
     return result
-
-print(get_joongna('아이패드 에어4'))
