@@ -47,7 +47,10 @@ def get_joongna(search_keyword):
                     price_div = second.find_all(attrs={'class': 'priceTxt'})
                     for price in price_div:
                         prices = re.sub(r'[^0-9]', '', price.get_text())
-                        price_list.append(prices)
+                        if len(prices) == 0:
+                            price_list.append(0)
+                        else:
+                            price_list.append(prices)
                     title_div = second.find_all(attrs={'class': 'titleTxt'})
                     for title in title_div:
                         name_list.append(title.get_text())
