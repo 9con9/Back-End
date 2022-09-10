@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import chromedriver_autoinstaller
 import re
 import numpy as np
+import pandas as pd
+from time import sleep
 
 def get_joongna(search_keyword):
     
@@ -19,9 +21,10 @@ def get_joongna(search_keyword):
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
     
     path = '/usr/bin/chromedriver'
-    driver = webdriver.Chrome(path, options=options)
+    driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
     driver.get('https://web.joongna.com/search?keyword=' + search_keyword + '&page=1')
     driver.implicitly_wait(3)
+    sleep(3)
 
     html = driver.page_source
     soup = BeautifulSoup(html, 'html.parser')
@@ -50,7 +53,7 @@ def get_joongna(search_keyword):
                         if len(prices) == 0:
                             price_list.append(0)
                         else:
-                            price_list.append(prices)
+                            price_list.append(int(prices))
                     title_div = second.find_all(attrs={'class': 'titleTxt'})
                     for title in title_div:
                         name_list.append(title.get_text())
@@ -74,7 +77,10 @@ def get_joongna(search_keyword):
                                     
     temp_list = price_list
     np_temp = np.array(temp_list, dtype=np.int64)
-    Q3, Q1, Q2 = np.percentile(np_temp, [75, 25, 50])
+    pd_temp = pd.Series(np_temp)
+    Q3 = pd_temp.quantile(.75)
+    Q1 = pd_temp.quantile(.25)
+    Q2 = pd_temp.quantile(.5)
     IQR = Q3 - Q1
     if IQR > Q2:
         low_np = list(np_temp[Q1 > np_temp])
@@ -84,7 +90,7 @@ def get_joongna(search_keyword):
         high_np = list(np_temp[Q3+0.4*IQR < np_temp])
 
     for i in range(len(name_list)):
-        prices = int(re.sub(r'[^0-9]', '', price_list[i]))
+        prices = price_list[i]
         if prices in low_np:
             result.append([i+1, '중고 나라', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'low'])
         elif prices in high_np:
@@ -92,3 +98,5 @@ def get_joongna(search_keyword):
         else:
             result.append([i+1, '중고 나라', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'normal'])
     return result
+
+print(get_joongna('아이패드 에어4'))

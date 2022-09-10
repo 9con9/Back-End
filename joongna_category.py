@@ -1,8 +1,8 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
-import chromedriver_autoinstaller
 import re
 import numpy as np
+import pandas as pd
 
 
 def get_joongna(search_keyword):
@@ -84,7 +84,10 @@ def get_joongna(search_keyword):
                                     
     temp_list = price_list
     np_temp = np.array(temp_list, dtype=np.int64)
-    Q3, Q1, Q2 = np.percentile(np_temp, [75, 25, 50])
+    pd_temp = pd.Series(np_temp)
+    Q3 = pd_temp.quantile(.75)
+    Q1 = pd_temp.quantile(.25)
+    Q2 = pd_temp.quantile(.5)
     IQR = Q3 - Q1
     if IQR > Q2:
         low_np = list(np_temp[Q1 > np_temp])
