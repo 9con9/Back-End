@@ -4,6 +4,7 @@ from selenium import webdriver
 import time
 import numpy as np
 import pandas as pd
+from time import sleep
 
 start = time.time()  # 시작 시간 저장
 
@@ -64,6 +65,7 @@ def get_dangn(keyword):
 
         driver.get(url)
         driver.implicitly_wait(time_to_wait=5)
+        sleep(1)
         page = driver.page_source
         soup = BeautifulSoup(page, "html.parser")
 
