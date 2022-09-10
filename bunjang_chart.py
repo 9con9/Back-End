@@ -18,7 +18,7 @@ def get_bunjang(search_keyword):
     options.add_argument("--remote-debugging-port=9222") 
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
     
-    path = '/home/ubuntu/chromedriver'
+    path = '/usr/bin/chromedriver'
     driver = webdriver.Chrome(path, options=options)
     driver.implicitly_wait(3)
     
