@@ -44,7 +44,7 @@ def keyword_joongna(search_keyword):
     options.add_argument("--remote-debugging-port=9222") 
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
-    path = '/home/ubuntu/chromedriver'
+    path = '/usr/bin/chromedriver'
     driver = webdriver.Chrome(path, options=options)
     driver.implicitly_wait(3)
     driver.get('https://web.joongna.com/search?keyword=' + search_keyword + '&page=1')
@@ -170,7 +170,7 @@ def keyword_dangn(keyword):
 
     # 셀레니움
 
-    path = '/home/ubuntu/chromedriver'
+    path = '/usr/bin/chromedriver'
     driver = webdriver.Chrome(path, options=options)
     driver.implicitly_wait(time_to_wait=5)
     driver.get(url)

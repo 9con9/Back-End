@@ -35,7 +35,7 @@ def get_dangn(keyword):
 
     # 셀레니움
 
-    path = '/home/ubuntu/chromedriver'
+    path = '/usr/bin/chromedriver'
     driver = webdriver.Chrome(path, options=options)
     driver.implicitly_wait(time_to_wait=5)
     driver.get(url)
