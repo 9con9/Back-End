@@ -20,8 +20,8 @@ def get_joongna(search_keyword):
     
     path = '/usr/bin/chromedriver'
     driver = webdriver.Chrome(path, options=options)
-    driver.implicitly_wait(3)
     driver.get('https://web.joongna.com/search?keyword=' + search_keyword + '&page=1')
+    driver.implicitly_wait(3)
 
     html = driver.page_source
     soup = BeautifulSoup(html, 'html.parser')

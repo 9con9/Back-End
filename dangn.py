@@ -37,8 +37,8 @@ def get_dangn(keyword):
 
     path = '/usr/bin/chromedriver'
     driver = webdriver.Chrome(path, options=options)
-    driver.implicitly_wait(time_to_wait=5)
     driver.get(url)
+    driver.implicitly_wait(time_to_wait=5)
     driver.find_element("xpath", "//*[@id=\"result\"]/div[1]/div[2]/span").click()
     driver.find_element("xpath", "//*[@id=\"result\"]/div[1]/div[2]/span").click()
     page = driver.page_source

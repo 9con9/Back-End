@@ -37,6 +37,7 @@ def get_bunjang(search_keyword):
     
     for key in category[search_keyword]:
         driver.get('https://m.bunjang.co.kr/categories/' + str(key) + '?page=1' + "&req_ref=popular_category")
+        driver.implicitly_wait(3)
         
         html = driver.page_source
         soup = BeautifulSoup(html, 'html.parser')
