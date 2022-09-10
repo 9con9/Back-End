@@ -41,6 +41,7 @@ def keyword_joongna(search_keyword):
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-setuid-sandbox')
     options.add_argument('--disable-dev-shm-usage')
+    options.add_argument("--remote-debugging-port=9222") 
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
     driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
@@ -163,6 +164,7 @@ def keyword_dangn(keyword):
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-setuid-sandbox')
     options.add_argument('--disable-dev-shm-usage')
+    options.add_argument("--remote-debugging-port=9222") 
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
     # 셀레니움
