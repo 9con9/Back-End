@@ -35,7 +35,8 @@ def get_dangn(keyword):
 
     # 셀레니움
 
-    driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
+    path = '/home/ubuntu/chromedriver'
+    driver = webdriver.Chrome(path, options=options)
     driver.implicitly_wait(time_to_wait=5)
     driver.get(url)
     driver.find_element("xpath", "//*[@id=\"result\"]/div[1]/div[2]/span").click()
