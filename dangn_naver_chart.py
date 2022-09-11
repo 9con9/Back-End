@@ -143,6 +143,7 @@ def keyword_joongna(search_keyword):
         else:
             result.append([i + 1, '중고 나라', name_list[i], upload_time_list[i], str(address_list[i]), int(prices),
                            str(link_list[i]), img_link_list[i], 'normal'])
+    driver.quit()
     return result
 
 def keyword_dangn(keyword):
@@ -291,4 +292,5 @@ def keyword_dangn(keyword):
             result.append(
                 [i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i],
                  str(link_list[i]), img_link_list[i], 'normal'])
+    driver.quit()
     return result

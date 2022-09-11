@@ -112,4 +112,5 @@ def get_bunjang(search_keyword):
                 else:
                     result.append([count, '번개 장터', name_list[i], upload_time_list[i], str(address_list[i]), int(price_list[i]), str(link_list[i]), img_link_list[i], 'normal'])
                     count += 1
+    driver.quit()
     return result
