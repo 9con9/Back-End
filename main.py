@@ -209,6 +209,60 @@ def startParsing_chart():
             else:
                 result_dict['date'] = chart
                 
+    for i in result_dict['bunjang_not_date']:
+        if i == "7일 전":
+            result_dict['bunjang'].insert(0, result_dict['all'][0])
+        elif i == '6일 전':
+            result_dict['bunjang'].insert(1, result_dict['all'][1])
+        elif i == '5일 전':
+            result_dict['bunjang'].insert(2, result_dict['all'][2])
+        elif i == '4일 전':
+            result_dict['bunjang'].insert(3, result_dict['all'][3])
+        elif i == '3일 전':
+            result_dict['bunjang'].insert(4, result_dict['all'][4])
+        elif i == '2일 전':
+            result_dict['bunjang'].insert(5, result_dict['all'][5])
+        elif i == '1일 전':
+            result_dict['bunjang'].insert(6, result_dict['all'][6])
+        else:
+            result_dict['bunjang'].insert(7, result_dict['all'][7])
+    
+    for i in result_dict['dangn_not_date']:
+        if i == "7일 전":
+            result_dict['dangn'].insert(0, result_dict['all'][0])
+        elif i == '6일 전':
+            result_dict['dangn'].insert(1, result_dict['all'][1])
+        elif i == '5일 전':
+            result_dict['dangn'].insert(2, result_dict['all'][2])
+        elif i == '4일 전':
+            result_dict['dangn'].insert(3, result_dict['all'][3])
+        elif i == '3일 전':
+            result_dict['dangn'].insert(4, result_dict['all'][4])
+        elif i == '2일 전':
+            result_dict['dangn'].insert(5, result_dict['all'][5])
+        elif i == '1일 전':
+            result_dict['dangn'].insert(6, result_dict['all'][6])
+        else:
+            result_dict['dangn'].insert(7, result_dict['all'][7])
+            
+    for i in result_dict['joongna_not_date']:
+        if i == "7일 전":
+            result_dict['joongna'].insert(0, result_dict['all'][0])
+        elif i == '6일 전':
+            result_dict['joongna'].insert(1, result_dict['all'][1])
+        elif i == '5일 전':
+            result_dict['joongna'].insert(2, result_dict['all'][2])
+        elif i == '4일 전':
+            result_dict['joongna'].insert(3, result_dict['all'][3])
+        elif i == '3일 전':
+            result_dict['joongna'].insert(4, result_dict['all'][4])
+        elif i == '2일 전':
+            result_dict['joongna'].insert(5, result_dict['all'][5])
+        elif i == '1일 전':
+            result_dict['joongna'].insert(6, result_dict['all'][6])
+        else:
+            result_dict['joongna'].insert(7, result_dict['all'][7])
+        
     print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
     return result_dict
 
