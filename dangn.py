@@ -4,6 +4,7 @@ from selenium import webdriver
 import time
 import numpy as np
 import pandas as pd
+import chromedriver_autoinstaller
 
 start = time.time()  # 시작 시간 저장
 

@@ -21,7 +21,7 @@ def get_joongna(search_keyword):
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
     
     path = '/usr/bin/chromedriver'
-    driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
+    driver = webdriver.Chrome(path, options=options)
     driver.get('https://web.joongna.com/search?keyword=' + search_keyword + '&page=1')
     driver.implicitly_wait(3)
     sleep(3)
