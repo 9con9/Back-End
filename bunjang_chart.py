@@ -41,39 +41,38 @@ def get_bunjang(search_keyword):
         for i in items:
             divs = i.find_all("div")
             for div in divs:
-                link_div = div.find_all(attrs={'class': 'sc-chbbiW dlCCUH'})
+                href_div = div.find_all(attrs={'class': 'sc-jKVCRD bqiLXa'})
+                link_div = div.find_all(attrs={'class': 'sc-LKuAh fuGAmW'})
+                img_div = div.find_all(attrs={'class': 'sc-kaNhvL hCNYZO'})
                 for link in link_div:
-                    isAD = div.find_all(attrs={'class':'sc-jXQZqI fwwrJI'})
+                    isAD = div.find_all(attrs={'class':'sc-kxynE fnToiW'})
                     AD = []
                     for ad in isAD:
                         if ad.get_text() == 'AD':
                             AD.append(ad)
                     if len(AD) == 0:
-                        href = link.attrs['href']
-                        
-                        link_list.append("https://bunjang.co.kr" + href)
-                        
-                        imgs = link.find('img')
-                        img = imgs['src']
-
-                        img_link_list.append(img)
-
-                        price_div = div.find_all(attrs={'class': "sc-gmeYpB iBMbn"})
+                        for hrefs in href_div:
+                            href = hrefs.attrs['href']
+                            link_list.append("https://bunjang.co.kr" + href)
+                        for imgs in img_div:
+                            img_find = imgs.find('img')
+                            img = img_find['src']
+                            img_link_list.append(img)
+                        price_div = div.find_all(attrs={'class': "sc-hzNEM bmEaky"})
                         if len(price_div) == 0:
-                            price_list.append('0')
+                                price_list.append('0')
                         else:
                             for price in price_div:
                                 prices = re.sub(r'[^0-9]', '', price.get_text())
                                 price_list.append(prices)
-                        name_div = div.find_all(attrs={'class': "sc-fcdeBU iVCsji"})
+                        name_div = div.find_all(attrs={'class': "sc-iBEsjs fqRSdX"})
                         for name in name_div:
                             name_list.append(name.get_text())
-                        place_div = div.find_all(attrs={'class': "sc-kZmsYB eylVEY"})
+                        place_div = div.find_all(attrs={'class': "sc-chbbiW ncXbJ"})
                         for place in place_div:
                             address_list.append(place.get_text())
-                        time_div = div.find_all(attrs={'class': "sc-iSDuPN iJqnGY"})
+                        time_div = div.find_all(attrs={'class': "sc-cooIXK fHvorz"})
                         for time in time_div:
-                            time = time.get_text()
                             if time[1] in '시' or time[2] in '시' or time[1] in '분' or time[2] in '분' or time[1] in '초' or time[2] in '초':
                                 upload_time_list.append('오늘')
                             else:

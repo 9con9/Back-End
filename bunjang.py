@@ -19,7 +19,7 @@ def get_bunjang(search_keyword):
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
     
     path = '/usr/bin/chromedriver'
-    driver = webdriver.Chrome(path = path, options=options)
+    driver = webdriver.Chrome(path, options=options)
     driver.get('https://m.bunjang.co.kr/search/products?q=' + search_keyword + '&order=' + "score" + '&page=1')
     driver.implicitly_wait(3)
 
