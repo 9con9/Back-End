@@ -1,11 +1,10 @@
-# import pymysql
-# import requests
 from bs4 import BeautifulSoup
 import re
 from selenium import webdriver
 import time
-import chromedriver_autoinstaller
 import numpy as np
+import pandas as pd
+import chromedriver_autoinstaller
 
 start = time.time()  # 시작 시간 저장
 
@@ -27,16 +26,20 @@ def get_dangn(keyword):
     options = webdriver.ChromeOptions()
     # 창 숨기는 옵션 추가
     options.add_argument('--window-size=1920x1080')
+    options.add_argument('--incognito')
     options.add_argument('--headless')
     options.add_argument('--no-sandbox')
+    options.add_argument('--disable-setuid-sandbox')
     options.add_argument('--disable-dev-shm-usage')
+    options.add_argument("--remote-debugging-port=9222") 
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
     # 셀레니움
 
-    driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
-    driver.implicitly_wait(time_to_wait=5)
+    path = '/usr/bin/chromedriver'
+    driver = webdriver.Chrome(path, options=options)
     driver.get(url)
+    driver.implicitly_wait(time_to_wait=5)
     driver.find_element("xpath", "//*[@id=\"result\"]/div[1]/div[2]/span").click()
     driver.find_element("xpath", "//*[@id=\"result\"]/div[1]/div[2]/span").click()
     page = driver.page_source
@@ -62,7 +65,6 @@ def get_dangn(keyword):
             price_p = art.find_all(attrs={'class': "article-price"})
             for pr in price_p:
                 prices = re.sub(r'[^0-9]', '', pr.get_text())
-                print(prices)
                 if len(prices) == 0:
                     price_list.append(0)
                 else:
@@ -75,17 +77,7 @@ def get_dangn(keyword):
             place_p = art.find_all(attrs={'class': "article-region-name"})
             for place in place_p:
                 address_list.append(place.get_text().strip())
-
-    # start = time.time()  # 시작 시간 저장
-    # for link in link_list:
-    #     driver.get(link)
-    #     page = driver.page_source
-    #     soup = BeautifulSoup(page, "html.parser")
-    #     upload = soup.select_one("#article-category > time").text.strip()
-    #     upload_time_list.append(upload)
-    # print("time :", time.time() - start)
-
-    start = time.time()  # 시작 시간 저장
+                
     for i in range(len(name_list)):
         driver.get(link_list[i])
         page = driver.page_source
@@ -95,12 +87,13 @@ def get_dangn(keyword):
             upload_time_list.append(temp_upload_time[3:])
         else:
             upload_time_list.append(temp_upload_time)
-        print(temp_upload_time)
-    print("time :", time.time() - start)
 
     temp_list = price_list
     np_temp = np.array(temp_list, dtype=np.int64)
-    Q3, Q1, Q2 = np.percentile(np_temp, [75, 25, 50])
+    pd_temp = pd.Series(np_temp)
+    Q3 = pd_temp.quantile(.75)
+    Q1 = pd_temp.quantile(.25)
+    Q2 = pd_temp.quantile(.5)
     IQR = Q3 - Q1
     if IQR > Q2:
         low_np = list(np_temp[Q1 > np_temp])
@@ -119,8 +112,5 @@ def get_dangn(keyword):
         else:
             result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i],
                            str(link_list[i]), img_link_list[i], 'normal'])
-            #result.append([i + 1, '당근 마켓', pattern.sub(r"", name[i]), upload_time_list[i], address_list[i], price_list[i],
-                          # str(link[i]), img_link_list[i], 'normal'])
+    driver.quit()
     return result
-    # conn.commit()
-    print("time :", time.time() - start)

@@ -38,12 +38,13 @@ def get_joongna(search_keyword):
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-setuid-sandbox')
     options.add_argument('--disable-dev-shm-usage')
-    options.add_argument("--remote-debugging-port=9222")
+    options.add_argument("--remote-debugging-port=9222") 
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
     
-    path = 'C:/Users/H_T/Desktop/공부/프로젝트/창경진_구구콘/개발/쓰래드/Back-End/chromedriver.exe'
-    driver = webdriver.Chrome(path)#, options=options)
+    path = '/usr/bin/chromedriver'
+    driver = webdriver.Chrome(path, options=options)
     driver.get('https://web.joongna.com/search?keyword=' + joongna_keyword + '&lat=' + lat + '&lon=' + lon +'&page=1')
+
     driver.implicitly_wait(3)
     sleep(3)
 
@@ -120,4 +121,5 @@ def get_joongna(search_keyword):
             result.append([i+1, '중고 나라', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'normal'])
     driver.quit()
     return result
+
 

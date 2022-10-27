@@ -1,10 +1,11 @@
-# import pymysql
-# import requests
 from bs4 import BeautifulSoup
 import re
 from selenium import webdriver
 import time
-import chromedriver_autoinstaller
+import numpy as np
+import pandas as pd
+from time import sleep
+
 start = time.time()  # 시작 시간 저장
 
 cccc = ["디지털기기", "가구/인테리어", "유아용품", "스포츠/레저", "의류", "도서/티켓/문구", "반려동물", "미용", "콘솔게임"]
@@ -30,17 +31,22 @@ def get_dangn(keyword):
     # 옵션 생성
     options = webdriver.ChromeOptions()
     # 창 숨기는 옵션 추가
-    options.add_argument("headless")
+    options.add_argument('--window-size=1920x1080')
+    options.add_argument('--incognito')
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-setuid-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument("--remote-debugging-port=9222") 
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
-    driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
+    path = '/usr/bin/chromedriver'
+    driver = webdriver.Chrome(path, options=options)
     driver.implicitly_wait(time_to_wait=5)
 
     # 변수 초기화
     end_number = 0
     name_list, address_list, price_list, link_list, img_link_list, upload_time_list = [], [], [], [], [], []
-    # print(end_number)
-
 
     for check in categoly:
         if keyword == check:
@@ -51,20 +57,17 @@ def get_dangn(keyword):
 
     link_start = 0
     link_end = end_number - 1
-    print(link_start)
-    print(link_end)
 
 
     for key in categoly[keyword]:
         # 셀레니움
-        url = "https://www.daangn.com/search/천안 " + key
+        url = "https://www.daangn.com/search/" + key
 
         driver.get(url)
+        driver.implicitly_wait(time_to_wait=5)
+        sleep(1)
         page = driver.page_source
         soup = BeautifulSoup(page, "html.parser")
-        #driver.find_element_by_xpath("//*[@id=\"result\"]/div[1]/div[2]/span").click()
-
-        driver.implicitly_wait(time_to_wait=5)
 
         items = soup.select("#flea-market-wrap")
 
@@ -84,7 +87,6 @@ def get_dangn(keyword):
                 price_p = art.find_all(attrs={'class': "article-price"})
                 for pr in price_p:
                     prices = re.sub(r'[^0-9]', '', pr.get_text())
-                    # print(prices)
                     if len(prices) == 0:
                         price_list.append(0)
                     else:
@@ -104,56 +106,37 @@ def get_dangn(keyword):
         del link_list[(link_end+1):]
 
         for i in range(link_start , link_end+1):
-            print("나는 i번째 링크들갈거야 : ", str(i))
             driver.get(link_list[i])
             page = driver.page_source
             soup = BeautifulSoup(page, "html.parser")
-            temp_upload_time = driver.find_elements_by_xpath('//*[@id="article-category"]/time')[0].text
+            temp_upload_time = driver.find_elements('xpath','//*[@id="article-category"]/time')[0].text
             if temp_upload_time[0:2] == "끌올":
                 upload_time_list.append(temp_upload_time[3:])
             else:
                 upload_time_list.append(temp_upload_time)
 
 
-        link_start = link_end + 1
-        link_end += end_number
-        print(link_start)
-        print(link_end)
-        print(len(upload_time_list))
-        print(len(name_list))
+    temp_list = price_list
+    np_temp = np.array(temp_list, dtype=np.int64)
+    pd_temp = pd.Series(np_temp)
+    Q3 = pd_temp.quantile(.75)
+    Q1 = pd_temp.quantile(.25)
+    Q2 = pd_temp.quantile(.5)
+    IQR = Q3 - Q1
 
-        # # print("업로드 타임: ", upload_time_list)
-        # # print("이름들 : ", name_list)
-        # print(link_start)
-        # print(link_end)
-        # print()
-        # print(len(name_list))
-        # print(len(price_list))
-        # print(len(link_list))
-        # print(len(img_link_list))
-        # print(len(name_list))
-        # print(len(address_list))
-        # print(len(upload_time_list))
-        # print()
-
-
-    # print(len(name_list))
-    # print(len(price_list))
-    # print(len(link_list))
-    # print(len(img_link_list))
-    # print(len(name_list))
-    # print(len(address_list))
-
+    if IQR > Q2:
+        low_np = list(np_temp[Q1 > np_temp])
+        high_np = list(np_temp[Q3 < np_temp])
+    else:
+        low_np = list(np_temp[Q1-0.2*IQR > np_temp])
+        high_np = list(np_temp[Q3+0.4*IQR < np_temp])
+        
     for i in range(len(name_list)):
-        result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i], str(link_list[i]), img_link_list[i], 'normal'])
-    # print()
-    # print()
-    # print()
-    # print()
-    # for value in result:
-    #     print(value)
-    #     print()
-    # print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
-
-
-# get_dangn("디지털기기")
+        if prices in low_np:
+             result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i], str(link_list[i]), img_link_list[i], 'low'])
+        elif prices in high_np:
+             result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i], str(link_list[i]), img_link_list[i], 'high'])
+        else:
+            result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i], str(link_list[i]), img_link_list[i], 'normal'])
+    driver.quit()    
+    return result
