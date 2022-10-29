@@ -5,10 +5,31 @@ import re
 import numpy as np
 import pandas as pd
 from time import sleep
+from geopy.geocoders import Nominatim
+
+def geocoding(address):
+    geolocoder = Nominatim(user_agent = 'South Korea', timeout=None)
+    geo = geolocoder.geocode(address)
+    crd = {"lat": str(geo.latitude), "lng": str(geo.longitude)}
+
+    return crd
 
 def get_joongna(search_keyword):
     
     result = []
+
+    ###
+    spl = search_keyword.split()
+    list_spl = [k for k in spl]
+    location_temp = list_spl[0:1]
+    joongna_keyword_temp = list_spl[1:]
+    location = " ".join(location_temp)
+    joongna_keyword = " ".join(joongna_keyword_temp)
+    ###
+
+    crd = geocoding(location)
+    lat = crd['lat']
+    lon = crd['lng']
 
     options = webdriver.ChromeOptions()
     options.add_argument('--window-size=1920x1080')
@@ -22,7 +43,8 @@ def get_joongna(search_keyword):
     
     path = '/usr/bin/chromedriver'
     driver = webdriver.Chrome(path, options=options)
-    driver.get('https://web.joongna.com/search?keyword=' + search_keyword + '&page=1')
+    driver.get('https://web.joongna.com/search?keyword=' + joongna_keyword + '&lat=' + lat + '&lon=' + lon +'&page=1')
+
     driver.implicitly_wait(3)
     sleep(3)
 
@@ -99,3 +121,5 @@ def get_joongna(search_keyword):
             result.append([i+1, '중고 나라', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'normal'])
     driver.quit()
     return result
+
+
