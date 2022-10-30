@@ -1,3 +1,4 @@
+import firebase_admin
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import chromedriver_autoinstaller
@@ -6,7 +7,16 @@ import numpy as np
 import pandas as pd
 from time import sleep
 from geopy.geocoders import Nominatim
-
+# from firebase_admin import db
+# from firebase_admin import credentials
+# from firebase_admin import firestore
+# import chromedriver_autoinstaller
+#
+#
+# cred = credentials.Certificate("../../con-635db-firebase-adminsdk-ki86d-a3e7d8b4ac.json")
+# firebase_admin.initialize_app(cred)
+#
+# db = firestore.client()
 def geocoding(address):
     geolocoder = Nominatim(user_agent = 'South Korea', timeout=None)
     geo = geolocoder.geocode(address)
@@ -14,10 +24,9 @@ def geocoding(address):
 
     return crd
 
-def get_joongna(search_keyword):
+def get_joongna(search_keyword, db):
     
     result = []
-
     ###
     spl = search_keyword.split()
     list_spl = [k for k in spl]
@@ -38,13 +47,12 @@ def get_joongna(search_keyword):
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-setuid-sandbox')
     options.add_argument('--disable-dev-shm-usage')
-    options.add_argument("--remote-debugging-port=9222") 
+    # options.add_argument("--remote-debugging-port=9222")
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
     
-    path = '/usr/bin/chromedriver'
+    path = '../../chromedriver'
     driver = webdriver.Chrome(path, options=options)
-    driver.get('https://web.joongna.com/search?keyword=' + joongna_keyword + '&lat=' + lat + '&lon=' + lon +'&page=1')
-
+    driver.get('https://web.joongna.com/search?keyword=' + joongna_keyword + '&lat=' + lat + '&lon=' + lon + '&page=1')
     driver.implicitly_wait(3)
     sleep(3)
 
@@ -54,7 +62,6 @@ def get_joongna(search_keyword):
     items = soup.select('#__next > div > div.container > div > div.ant-col.ant-col-20.css-t77d8m > div.ant-row.listWrap.css-euacx')
 
     name_list, upload_time_list, price_list, link_list, img_link_list, address_list = [], [], [], [], [], []
-    
     for i in items:
         divs = i.find_all("div")
         for div in divs:
@@ -96,30 +103,90 @@ def get_joongna(search_keyword):
                                 else:
                                     tim = span.get_text()
                                     upload_time_list.append(tim)
-                                    
-    temp_list = price_list
-    np_temp = np.array(temp_list, dtype=np.int64)
-    pd_temp = pd.Series(np_temp)
-    Q3 = pd_temp.quantile(.75)
-    Q1 = pd_temp.quantile(.25)
-    Q2 = pd_temp.quantile(.5)
-    IQR = Q3 - Q1
-    if IQR > Q2:
-        low_np = list(np_temp[Q1 > np_temp])
-        high_np = list(np_temp[Q3 < np_temp])
+
+    del name_list[24:]
+    del address_list[24:]
+    del price_list[24:]
+    del link_list[24:]
+    del img_link_list[24:]
+    del upload_time_list[24:]
+
+    try:
+        doc_ref = db.collection(u'99con').document(u'joongna').collection(u'' + search_keyword).document(
+            u'last_number')
+        docs = doc_ref.get()
+        dic_number = docs.to_dict()
+        joongna_last_number = dic_number["number"]
+        # print(joongna_last_number)
+    except:
+        doc_ref = db.collection(u'99con').document(u'joongna').collection(u'' + search_keyword).document(
+            u'last_number')
+        doc_ref.set({
+            u'number': 0
+        })
+        docs = doc_ref.get()
+        dic_number = docs.to_dict()
+        joongna_last_number = dic_number["number"]
+        # print(joongna_last_number)
+
+    if joongna_last_number == 0:
+        pass
     else:
-        low_np = list(np_temp[Q1-0.2*IQR > np_temp])
-        high_np = list(np_temp[Q3+0.4*IQR < np_temp])
+        index = 0
+        doc_ref = db.collection(u'99con').document(u'joongna').collection(u'' + search_keyword).document(
+            u'' + str(joongna_last_number - 1))
+        docs = doc_ref.get()
+        dic_row = docs.to_dict()
+        latest_link = dic_row["link"]
+        # print(latest_link)
+        if latest_link in link_list:
+            index = link_list.index(latest_link)
+            # print(link_list)
+            # print(index)
+            del name_list[index:]
+            del address_list[index:]
+            del price_list[index:]
+            del link_list[index:]
+            del img_link_list[index:]
+            del upload_time_list[index:]
 
-    for i in range(len(name_list)):
-        prices = price_list[i]
-        if prices in low_np:
-            result.append([i+1, '중고 나라', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'low'])
-        elif prices in high_np:
-            result.append([i+1, '중고 나라', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'high'])
-        else:
-            result.append([i+1, '중고 나라', name_list[i], upload_time_list[i], str(address_list[i]), int(prices), str(link_list[i]), img_link_list[i], 'normal'])
+
+    # temp_list = price_list
+    # np_temp = np.array(temp_list, dtype=np.int64)
+    # pd_temp = pd.Series(np_temp)
+    # Q3 = pd_temp.quantile(.75)
+    # Q1 = pd_temp.quantile(.25)
+    # Q2 = pd_temp.quantile(.5)
+    # IQR = Q3 - Q1
+    # if IQR > Q2:
+    #     low_np = list(np_temp[Q1 > np_temp])
+    #     high_np = list(np_temp[Q3 < np_temp])
+    # else:
+    #     low_np = list(np_temp[Q1-0.2*IQR > np_temp])
+    #     high_np = list(np_temp[Q3+0.4*IQR < np_temp])
+
+
+    index = 0
+    for i in range(len(name_list)-1, -1, -1):
+        print(str(index) + "번째 중나 삽입")
+        doc_ref = db.collection(u'99con').document(u'joongna').collection(u'' + search_keyword).document(
+            u'' + str(int(joongna_last_number) + int(index)))
+        doc_ref.set({
+            u'id': joongna_last_number + i,
+            u'platform': "중고나라",
+            u'name': name_list[i],
+            u'upload_time': upload_time_list[i],
+            u'address': address_list[i],
+            u'price': price_list[i],
+            u'link': link_list[i],
+            u'img_link': img_link_list[i],
+            u'out_lier': "low"
+        })
+        index += 1
+    doc_ref = db.collection(u'99con').document(u'joongna').collection(u'' + search_keyword).document(
+        u'last_number')
+    doc_ref.set({
+        u'number': len(name_list) + joongna_last_number
+    })
+
     driver.quit()
-    return result
-
-

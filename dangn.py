@@ -1,15 +1,11 @@
 from bs4 import BeautifulSoup
 import re
 from selenium import webdriver
-import time
 import numpy as np
 import pandas as pd
-import chromedriver_autoinstaller
-
-start = time.time()  # 시작 시간 저장
 
 
-def get_dangn(keyword):
+def get_dangn(keyword, db):
     result = []
     # 이모티콘 제거하기
     pattern = re.compile("["
@@ -17,7 +13,7 @@ def get_dangn(keyword):
                          "]+", flags=re.UNICODE)
 
     url = "https://www.daangn.com/search/" + keyword
-    # url = "https://www.daangn.com/search/천안%20아이패드%20에어3"
+
 
     # 변수 초기화
     name_list, address_list, price_list, link_list, img_link_list, upload_time_list = [], [], [], [], [], []
@@ -31,12 +27,12 @@ def get_dangn(keyword):
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-setuid-sandbox')
     options.add_argument('--disable-dev-shm-usage')
-    options.add_argument("--remote-debugging-port=9222") 
+    # options.add_argument("--remote-debugging-port=9222")
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
-    # 셀레니움
 
-    path = '/usr/bin/chromedriver'
+    # 셀레니움
+    path = '../../chromedriver'
     driver = webdriver.Chrome(path, options=options)
     driver.get(url)
     driver.implicitly_wait(time_to_wait=5)
@@ -77,7 +73,44 @@ def get_dangn(keyword):
             place_p = art.find_all(attrs={'class': "article-region-name"})
             for place in place_p:
                 address_list.append(place.get_text().strip())
-                
+    try:
+        doc_ref = db.collection(u'99con').document(u'dangn').collection(u'' + keyword).document(
+            u'last_number')
+        docs = doc_ref.get()
+        dic_number = docs.to_dict()
+        dangn_last_number = dic_number["number"]
+        # print(dangn_last_number)
+    except:
+        doc_ref = db.collection(u'99con').document(u'dangn').collection(u'' + keyword).document(
+            u'last_number')
+        doc_ref.set({
+            u'number': 0
+        })
+        docs = doc_ref.get()
+        dic_number = docs.to_dict()
+        dangn_last_number = dic_number["number"]
+        # print(dangn_last_number)
+
+    if dangn_last_number == 0:
+        pass
+    else:
+        index = 0
+        doc_ref = db.collection(u'99con').document(u'dangn').collection(u'' + keyword).document(u'' + str(dangn_last_number-1))
+        docs = doc_ref.get()
+        dic_row = docs.to_dict()
+        latest_link = dic_row["link"]
+        # print(latest_link)
+        if latest_link in link_list:
+            index = link_list.index(latest_link)
+            # print(link_list)
+            # print(index)
+            del name_list[index:]
+            del address_list[index:]
+            del price_list[index:]
+            del link_list[index:]
+            del img_link_list[index:]
+            del upload_time_list[index:]
+
     for i in range(len(name_list)):
         driver.get(link_list[i])
         page = driver.page_source
@@ -88,29 +121,41 @@ def get_dangn(keyword):
         else:
             upload_time_list.append(temp_upload_time)
 
-    temp_list = price_list
-    np_temp = np.array(temp_list, dtype=np.int64)
-    pd_temp = pd.Series(np_temp)
-    Q3 = pd_temp.quantile(.75)
-    Q1 = pd_temp.quantile(.25)
-    Q2 = pd_temp.quantile(.5)
-    IQR = Q3 - Q1
-    if IQR > Q2:
-        low_np = list(np_temp[Q1 > np_temp])
-        high_np = list(np_temp[Q3 < np_temp])
-    else:
-        low_np = list(np_temp[Q1 - 0.2 * IQR > np_temp])
-        high_np = list(np_temp[Q3 + 0.4 * IQR < np_temp])
+    # temp_list = price_list
+    # np_temp = np.array(temp_list, dtype=np.int64)
+    # pd_temp = pd.Series(np_temp)
+    # Q3 = pd_temp.quantile(.75)
+    # Q1 = pd_temp.quantile(.25)
+    # Q2 = pd_temp.quantile(.5)
+    # IQR = Q3 - Q1
+    # if IQR > Q2:
+    #     low_np = list(np_temp[Q1 > np_temp])
+    #     high_np = list(np_temp[Q3 < np_temp])
+    # else:
+    #     low_np = list(np_temp[Q1 - 0.2 * IQR > np_temp])
+    #     high_np = list(np_temp[Q3 + 0.4 * IQR < np_temp])
 
-    for i in range(len(name_list)):
-        if int(price_list[i]) in low_np:
-            result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i],
-                           str(link_list[i]), img_link_list[i], 'low'])
-        elif int(price_list[i]) in high_np:
-            result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i],
-                           str(link_list[i]), img_link_list[i], 'high'])
-        else:
-            result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i],
-                           str(link_list[i]), img_link_list[i], 'normal'])
+
+    index = 0
+    for i in range(len(name_list)-1,-1,-1):
+        print(str(index) + "번째 당근 삽입")
+        doc_ref = db.collection(u'99con').document(u'dangn').collection(u'' + keyword).document(u'' + str(int(dangn_last_number) + int(index)))
+        doc_ref.set({
+            u'id': dangn_last_number + i,
+            u'platform': "당근마켓",
+            u'name': name_list[i],
+            u'upload_time': upload_time_list[i],
+            u'address': address_list[i],
+            u'price': price_list[i],
+            u'link': link_list[i],
+            u'img_link': img_link_list[i],
+            u'out_lier': "low"
+        })
+        index += 1
+    doc_ref = db.collection(u'99con').document(u'dangn').collection(u'' + keyword).document(
+        u'last_number')
+    doc_ref.set({
+        u'number' : len(name_list) + dangn_last_number
+    })
     driver.quit()
-    return result
+
