@@ -4,6 +4,7 @@ from time import sleep
 import numpy as np
 import pandas as pd
 import re
+import chromedriver_autoinstaller
 
 category = {
     "디지털기기": [600],
@@ -28,11 +29,11 @@ def get_bunjang(search_keyword):
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-setuid-sandbox')
     options.add_argument('--disable-dev-shm-usage')
-    options.add_argument("--remote-debugging-port=9222") 
+    # options.add_argument("--remote-debugging-port=9222") //
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
     
     path = '/usr/bin/chromedriver'
-    driver = webdriver.Chrome(path, options=options)
+    driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
     driver.implicitly_wait(3)
     
     name_list, upload_time_list, price_list, link_list, img_link_list, address_list = [], [], [], [], [], []
@@ -45,14 +46,15 @@ def get_bunjang(search_keyword):
         soup = BeautifulSoup(html, 'html.parser')
 
         items = soup.select('#root > div > div > div:nth-child(4) > div > div:nth-child(4) > div')
+        
         for i in items:
             divs = i.find_all("div")
             for div in divs:
-                href_div = div.find_all(attrs={'class': 'sc-jKVCRD bqiLXa'})
-                link_div = div.find_all(attrs={'class': 'sc-LKuAh fuGAmW'})
-                img_div = div.find_all(attrs={'class': 'sc-kaNhvL hCNYZO'})
+                href_div = div.find_all(attrs={'class': 'sc-dEoRIm iizKix'})
+                link_div = div.find_all(attrs={'class': 'sc-dEoRIm iizKix'})
+                img_div = div.find_all(attrs={'class': 'sc-jtggT eSpfym'})
                 for link in link_div:
-                    isAD = div.find_all(attrs={'class':'sc-kxynE fnToiW'})
+                    isAD = div.find_all(attrs={'class':'sc-gmeYpB eQzNrP'})
                     AD = []
                     for ad in isAD:
                         if ad.get_text() == 'AD':
@@ -65,20 +67,20 @@ def get_bunjang(search_keyword):
                             img_find = imgs.find('img')
                             img = img_find['src']
                             img_link_list.append(img)
-                        price_div = div.find_all(attrs={'class': "sc-hzNEM bmEaky"})
+                        price_div = div.find_all(attrs={'class': "sc-kaNhvL moVyh"})
                         if len(price_div) == 0:
                                 price_list.append('0')
                         else:
                             for price in price_div:
                                 prices = re.sub(r'[^0-9]', '', price.get_text())
                                 price_list.append(prices)
-                        name_div = div.find_all(attrs={'class': "sc-iBEsjs fqRSdX"})
+                        name_div = div.find_all(attrs={'class': "sc-jKVCRD gwleiO"})
                         for name in name_div:
                             name_list.append(name.get_text())
-                        place_div = div.find_all(attrs={'class': "sc-chbbiW ncXbJ"})
+                        place_div = div.find_all(attrs={'class': "sc-LKuAh YRCiR"})
                         for place in place_div:
                             address_list.append(place.get_text())
-                        time_div = div.find_all(attrs={'class': "sc-cooIXK fHvorz"})
+                        time_div = div.find_all(attrs={'class': "sc-hzNEM jOnwQC"})
                         for time in time_div:
                             upload_time_list.append(time.get_text())
                             
