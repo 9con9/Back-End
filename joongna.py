@@ -10,7 +10,7 @@ from geopy.geocoders import Nominatim
 # from firebase_admin import db
 # from firebase_admin import credentials
 # from firebase_admin import firestore
-# import chromedriver_autoinstaller
+import chromedriver_autoinstaller
 #
 #
 # cred = credentials.Certificate("../../con-635db-firebase-adminsdk-ki86d-a3e7d8b4ac.json")
@@ -50,7 +50,7 @@ def get_joongna(search_keyword, db):
         # options.add_argument("--remote-debugging-port=9222")
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
-        path = '../../chromedriver'
+        path = '/usr/bin/chromedriver'
         driver = webdriver.Chrome(path, options=options)
         driver.get('https://web.joongna.com/search?keyword=' + joongna_keyword + '&lat=' + lat + '&lon=' + lon + '&page=1')
         driver.implicitly_wait(3)
@@ -191,5 +191,5 @@ def get_joongna(search_keyword, db):
 
         driver.quit()
     except:
-        print("except")
+        print("joongna except")
         pass

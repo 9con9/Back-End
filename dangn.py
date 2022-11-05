@@ -3,6 +3,7 @@ import re
 from selenium import webdriver
 import numpy as np
 import pandas as pd
+import chromedriver_autoinstaller
 
 
 def get_dangn(keyword, db):
@@ -33,7 +34,7 @@ def get_dangn(keyword, db):
 
 
         # 셀레니움
-        path = '../../chromedriver'
+        path = '/usr/bin/chromedriver'
         driver = webdriver.Chrome(path, options=options)
         driver.get(url)
         driver.implicitly_wait(time_to_wait=5)
@@ -160,6 +161,6 @@ def get_dangn(keyword, db):
         })
         driver.quit()
     except:
-        print("except")
+        print("당근 except남 ㅅㄱ")
         pass
 
