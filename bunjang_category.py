@@ -179,4 +179,3 @@ def get_bunjang(search_keyword, db):
 # cred = credentials.Certificate("../../test-3ab4e-firebase-adminsdk-pof1a-0c12bc8c6c.json")
 # firebase_admin.initialize_app(cred)
 # db = firestore.client()
-# get_bunjang("디지털기기", db)

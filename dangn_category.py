@@ -148,3 +148,4 @@ def get_dangn(keyword, db):
         })
         index += 1
     driver.quit()
+
