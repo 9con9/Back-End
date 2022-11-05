@@ -62,7 +62,11 @@ def get_dangn(keyword, db):
 
                 price_p = art.find_all(attrs={'class': "article-price"})
                 for pr in price_p:
-                    prices = re.sub(r'[^0-9]', '', pr.get_text())
+                    if "만원" in pr.get_text():
+                        prices = re.sub(r'[^0-9]', '', pr.get_text())
+                        prices = str(prices) + "0000"
+                    else:
+                        prices = re.sub(r'[^0-9]', '', pr.get_text())
                     if len(prices) == 0:
                         price_list.append(0)
                     else:
