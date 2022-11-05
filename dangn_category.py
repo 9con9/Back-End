@@ -1,3 +1,4 @@
+import firebase_admin
 from bs4 import BeautifulSoup
 import re
 from selenium import webdriver
@@ -5,24 +6,25 @@ import time
 import numpy as np
 import pandas as pd
 from time import sleep
+from multiprocessing import Pool
 
 start = time.time()  # 시작 시간 저장
 
 cccc = ["디지털기기", "가구/인테리어", "유아용품", "스포츠/레저", "의류", "도서/티켓/문구", "반려동물", "미용", "콘솔게임"]
-categoly = {"디지털기기": ["스마트폰","태블릿", "스마트워치", "충전기", "이어폰", "프로젝터", "컴퓨터", "노트북", "카메라", "티비", "케이블", "pc", "공유기", "셋톱박스", "아이패드"]
+categoly = {"디지털기기": ["아이폰", "스마트워치","에어팟", "컴퓨터", "노트북", "티비", "아이패드"]
                , "가구/인테리어": ["소품","가구", "침구", "인테리어", "책상"]
                , "유아용품": ["아동복", "유아", "인형", "출산", "유아용품"]
-               , "스포츠/레저": ["골프", "자전거", "킥보드", "테니스", "헬스", "야구", "볼링", "배드민턴", "탁구", "농구", "당구", "등산", "트램펄린", "운동기구", "아령"]
-               , "의류": ["패딩", "코트", "맨투맨", "후드티", "셔츠", "바지", "치마", "원피스", "가디건", "니트", "블라우스", "양말", "슬렉스",  "통바지", "청바지"]
-               , "도서/티켓/문구": ["도서", "문구", "기프티콘", "쿠폰", "상품권", "티켓"]
-               , "반려동물": ["사료", "강아지 간식", "고양이 간식", "강아지 용품", "고양이 용품"]
-               , "미용": ["스킨로션", "메이크업", "향수", "네일아트", "컨실러"]
-               , "콘솔게임": ["플스", "XBOX", "ps5", "닌텐도 스위치", "wii"]
+               , "스포츠/레저": ["골프", "자전거", "테니스", "배드민턴", "탁구", "등산"]
+               , "의류": ["패딩","의류", "바지", "니트", "슬렉스"]
+               , "도서/티켓/문구": ["도서", "문구", "기프티콘", "상품권"]
+               , "반려동물": ["사료", "강아지 용품", "고양이 용품"]
+               , "미용": ["스킨로션", "메이크업", "향수"]
+               , "콘솔게임": [ "XBOX", "ps5", "닌텐도 스위치"]
             }
 
 
 
-def get_dangn(keyword):
+def get_dangn(keyword, db):
     result = []
     # 이모티콘 제거하기
     pattern = re.compile("["
@@ -37,12 +39,13 @@ def get_dangn(keyword):
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-setuid-sandbox')
     options.add_argument('--disable-dev-shm-usage')
-    options.add_argument("--remote-debugging-port=9222") 
+    # options.add_argument("--remote-debugging-port=9222")
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
-    path = '/usr/bin/chromedriver'
+    path = '../../chromedriver'
     driver = webdriver.Chrome(path, options=options)
     driver.implicitly_wait(time_to_wait=5)
+
 
     # 변수 초기화
     end_number = 0
@@ -50,17 +53,20 @@ def get_dangn(keyword):
 
     for check in categoly:
         if keyword == check:
-            end_number = int(15 // len(categoly[keyword]))+1
+            end_number = int(8 // len(categoly[keyword]))+1
             break
     else:
         print("카테고리 찾지 못함")
 
     link_start = 0
     link_end = end_number - 1
+    up_number = end_number
+    up_count = link_end
 
 
     for key in categoly[keyword]:
         # 셀레니움
+        print(key)
         url = "https://www.daangn.com/search/" + key
 
         driver.get(url)
@@ -99,11 +105,12 @@ def get_dangn(keyword):
                 place_p = art.find_all(attrs={'class': "article-region-name"})
                 for place in place_p:
                     address_list.append(place.get_text().strip())
-        del img_link_list[(link_end+1):]
-        del price_list[(link_end+1):]
-        del name_list[(link_end+1):]
-        del address_list[(link_end+1):]
-        del link_list[(link_end+1):]
+        del img_link_list[(up_count+1):]
+        del price_list[(up_count+1):]
+        del name_list[(up_count+1):]
+        del address_list[(up_count+1):]
+        del link_list[(up_count+1):]
+        up_count += up_number
 
         for i in range(link_start , link_end+1):
             driver.get(link_list[i])
@@ -114,29 +121,30 @@ def get_dangn(keyword):
                 upload_time_list.append(temp_upload_time[3:])
             else:
                 upload_time_list.append(temp_upload_time)
+        print(name_list)
+    if keyword == "가구/인테리어":
+        keyword = "가구인테리어"
+    elif keyword == "도서/티켓/문구":
+        keyword = "도서티켓문구"
+    elif keyword == "스포츠/레저":
+        keyword = "스포츠레저"
 
-
-    temp_list = price_list
-    np_temp = np.array(temp_list, dtype=np.int64)
-    pd_temp = pd.Series(np_temp)
-    Q3 = pd_temp.quantile(.75)
-    Q1 = pd_temp.quantile(.25)
-    Q2 = pd_temp.quantile(.5)
-    IQR = Q3 - Q1
-
-    if IQR > Q2:
-        low_np = list(np_temp[Q1 > np_temp])
-        high_np = list(np_temp[Q3 < np_temp])
-    else:
-        low_np = list(np_temp[Q1-0.2*IQR > np_temp])
-        high_np = list(np_temp[Q3+0.4*IQR < np_temp])
-        
-    for i in range(len(name_list)):
-        if prices in low_np:
-             result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i], str(link_list[i]), img_link_list[i], 'low'])
-        elif prices in high_np:
-             result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i], str(link_list[i]), img_link_list[i], 'high'])
-        else:
-            result.append([i + 1, '당근 마켓', pattern.sub(r"", name_list[i]), upload_time_list[i], address_list[i], price_list[i], str(link_list[i]), img_link_list[i], 'normal'])
-    driver.quit()    
-    return result
+    dangn_last_number = 0
+    index = 0
+    print(keyword)
+    for i in range(len(name_list) - 1, -1, -1):
+        print(str(index) + "번째 당근 삽입")
+        doc_ref = db.collection(u'99con').document(u'dangn_category').collection(u'' + keyword).document(
+            u'' + str(i))
+        doc_ref.set({
+            u'id': i,
+            u'platform': "당근마켓",
+            u'name': name_list[i],
+            u'upload_time': upload_time_list[i],
+            u'address': address_list[i],
+            u'price': price_list[i],
+            u'link': link_list[i],
+            u'img_link': img_link_list[i]
+        })
+        index += 1
+    driver.quit()

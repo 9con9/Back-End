@@ -8,7 +8,7 @@ import pandas as pd
 # from firebase_admin import db
 # from firebase_admin import credentials
 # from firebase_admin import firestore
-# import chromedriver_autoinstaller
+import chromedriver_autoinstaller
 #
 # cred = credentials.Certificate("../../con-635db-firebase-adminsdk-ki86d-a3e7d8b4ac.json")
 # firebase_admin.initialize_app(cred)
@@ -34,7 +34,7 @@ def get_bunjang(search_keyword, db):
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
     
     path = '../../chromedriver'
-    driver = webdriver.Chrome(path, options=options)
+    driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
     driver.get('https://m.bunjang.co.kr/search/products?q=' + search_keyword + '&order=' + "score" + '&page=1')
     driver.implicitly_wait(3)
 
@@ -82,6 +82,7 @@ def get_bunjang(search_keyword, db):
                         address_list.append(place.get_text())
                     time_div = div.find_all(attrs={'class': "sc-cooIXK fHvorz"})
                     for time in time_div:
+                        print(time)
                         upload_time_list.append(time.get_text())
     del name_list[24:]
     del address_list[24:]
