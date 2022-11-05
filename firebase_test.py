@@ -132,126 +132,164 @@ def parsing_chart(keyword, db):
 
 def get_bunjang(keyword, db):
     global result
-    doc_ref = db.collection(u'99con').document(u'bunjang').collection(u'' + keyword).document(
-        u'last_number')
-    docs = doc_ref.get()
-    dic_number = docs.to_dict()
-    bunjang_last_number = dic_number["number"]
-    print(bunjang_last_number)
-    result = []
-    for i in range(bunjang_last_number-1, bunjang_last_number-25, -1):
-        print("번장 슈웃~")
+    try:
         doc_ref = db.collection(u'99con').document(u'bunjang').collection(u'' + keyword).document(
-            u'' + str(i))
+            u'last_number')
         docs = doc_ref.get()
-        dic_row = docs.to_dict()
-        result.append(
-            [dic_row["id"], dic_row["platform"], pattern.sub(r"", dic_row["name"]), dic_row["upload_time"], dic_row["address"], dic_row["price"],
-                               str(dic_row["link"]), dic_row["img_link"]])
+        dic_number = docs.to_dict()
+        bunjang_last_number = dic_number["number"]
+        print(bunjang_last_number)
+        result = []
+    except:
+        return None
+    for i in range(bunjang_last_number-1, bunjang_last_number-25, -1):
+        try:
+            print("번장 슈웃~")
+            doc_ref = db.collection(u'99con').document(u'bunjang').collection(u'' + keyword).document(
+                u'' + str(i))
+            docs = doc_ref.get()
+            dic_row = docs.to_dict()
+            result.append(
+                [dic_row["id"], dic_row["platform"], pattern.sub(r"", dic_row["name"]), dic_row["upload_time"], dic_row["address"], dic_row["price"],
+                                   str(dic_row["link"]), dic_row["img_link"]])
+        except:
+            pass
+
     # print(result)
-    return result
+
 
 def get_dangn(keyword, db):
     global result
-    doc_ref = db.collection(u'99con').document(u'dangn').collection(u'' + keyword).document(
-        u'last_number')
-    docs = doc_ref.get()
-    dic_number = docs.to_dict()
-    dangn_last_number = dic_number["number"]
-    print(dangn_last_number)
-    result = []
-    for i in range(dangn_last_number-1, dangn_last_number-19, -1):
-        print("당근 슈웃~")
+    try:
         doc_ref = db.collection(u'99con').document(u'dangn').collection(u'' + keyword).document(
-            u'' + str(i))
+            u'last_number')
         docs = doc_ref.get()
-        dic_row = docs.to_dict()
-        result.append(
-            [dic_row["id"], dic_row["platform"], pattern.sub(r"", dic_row["name"]), dic_row["upload_time"], dic_row["address"], dic_row["price"],
-                               str(dic_row["link"]), dic_row["img_link"]])
+        dic_number = docs.to_dict()
+        dangn_last_number = dic_number["number"]
+        print(dangn_last_number)
+        result = []
+    except:
+        return None
+    for i in range(dangn_last_number-1, dangn_last_number-19, -1):
+        try:
+            print("당근 슈웃~")
+            doc_ref = db.collection(u'99con').document(u'dangn').collection(u'' + keyword).document(
+                u'' + str(i))
+            docs = doc_ref.get()
+            dic_row = docs.to_dict()
+            result.append(
+                [dic_row["id"], dic_row["platform"], pattern.sub(r"", dic_row["name"]), dic_row["upload_time"], dic_row["address"], dic_row["price"],
+                                   str(dic_row["link"]), dic_row["img_link"]])
+        except:
+            pass
     # print(result)
-    return result
+
 
 def get_joongna(keyword, db):
     global result
-    doc_ref = db.collection(u'99con').document(u'joongna').collection(u'' + keyword).document(
-        u'last_number')
-    docs = doc_ref.get()
-    dic_number = docs.to_dict()
-    joongna_last_number = dic_number["number"]
-    print(joongna_last_number)
-    result = []
-    for i in range(joongna_last_number-1, joongna_last_number-25, -1):
-        print("중나 슈웃~")
+    try:
         doc_ref = db.collection(u'99con').document(u'joongna').collection(u'' + keyword).document(
-            u'' + str(i))
+            u'last_number')
         docs = doc_ref.get()
-        dic_row = docs.to_dict()
-        result.append(
-            [dic_row["id"], dic_row["platform"], pattern.sub(r"", dic_row["name"]), dic_row["upload_time"], dic_row["address"], dic_row["price"],
-                               str(dic_row["link"]), dic_row["img_link"]])
+        dic_number = docs.to_dict()
+        joongna_last_number = dic_number["number"]
+        print(joongna_last_number)
+        result = []
+    except:
+        return None
+    for i in range(joongna_last_number-1, joongna_last_number-25, -1):
+        try:
+            print("중나 슈웃~")
+            doc_ref = db.collection(u'99con').document(u'joongna').collection(u'' + keyword).document(
+                u'' + str(i))
+            docs = doc_ref.get()
+            dic_row = docs.to_dict()
+            result.append(
+                [dic_row["id"], dic_row["platform"], pattern.sub(r"", dic_row["name"]), dic_row["upload_time"], dic_row["address"], dic_row["price"],
+                                   str(dic_row["link"]), dic_row["img_link"]])
+        except:
+            pass
     # print(result)
 
 def get_bunjang_chart(keyword, db):
     global result
-    doc_ref = db.collection(u'99con').document(u'bunjang_chart').collection(u'' + keyword).document(
-        u'last_number')
-    docs = doc_ref.get()
-    dic_number = docs.to_dict()
-    bunjang_last_number = dic_number["number"]
-    print(bunjang_last_number)
-    result = []
-    for i in range(bunjang_last_number-1, bunjang_last_number-25, -1):
-        print("번장 슈웃~")
+    try:
         doc_ref = db.collection(u'99con').document(u'bunjang_chart').collection(u'' + keyword).document(
-            u'' + str(i))
+            u'last_number')
         docs = doc_ref.get()
-        dic_row = docs.to_dict()
-        result.append(
-            [dic_row["id"], dic_row["platform"], pattern.sub(r"", dic_row["name"]), dic_row["upload_time"], dic_row["address"], dic_row["price"],
-                               str(dic_row["link"]), dic_row["img_link"]])
+        dic_number = docs.to_dict()
+        bunjang_last_number = dic_number["number"]
+        print(bunjang_last_number)
+        result = []
+    except:
+        return None
+    for i in range(bunjang_last_number-1, bunjang_last_number-25, -1):
+        try:
+            print("번장 슈웃~")
+            doc_ref = db.collection(u'99con').document(u'bunjang_chart').collection(u'' + keyword).document(
+                u'' + str(i))
+            docs = doc_ref.get()
+            dic_row = docs.to_dict()
+            result.append(
+                [dic_row["id"], dic_row["platform"], pattern.sub(r"", dic_row["name"]), dic_row["upload_time"], dic_row["address"], dic_row["price"],
+                                   str(dic_row["link"]), dic_row["img_link"]])
+        except:
+            pass
     # print(result)
-    return result
+
 
 def get_dangn_chart(keyword, db):
     global result
-    doc_ref = db.collection(u'99con').document(u'dangn_chart').collection(u'' + keyword).document(
-        u'last_number')
-    docs = doc_ref.get()
-    dic_number = docs.to_dict()
-    dangn_last_number = dic_number["number"]
-    print(dangn_last_number)
-    result = []
-    for i in range(dangn_last_number-1, dangn_last_number-19, -1):
-        print("당근 슈웃~")
+    try:
         doc_ref = db.collection(u'99con').document(u'dangn_chart').collection(u'' + keyword).document(
-            u'' + str(i))
+            u'last_number')
         docs = doc_ref.get()
-        dic_row = docs.to_dict()
-        result.append(
-            [dic_row["id"], dic_row["platform"], pattern.sub(r"", dic_row["name"]), dic_row["upload_time"], dic_row["address"], dic_row["price"],
-                               str(dic_row["link"]), dic_row["img_link"]])
+        dic_number = docs.to_dict()
+        dangn_last_number = dic_number["number"]
+        print(dangn_last_number)
+        result = []
+    except:
+        return None
+    for i in range(dangn_last_number-1, dangn_last_number-19, -1):
+        try:
+            print("당근 슈웃~")
+            doc_ref = db.collection(u'99con').document(u'dangn_chart').collection(u'' + keyword).document(
+                u'' + str(i))
+            docs = doc_ref.get()
+            dic_row = docs.to_dict()
+            result.append(
+                [dic_row["id"], dic_row["platform"], pattern.sub(r"", dic_row["name"]), dic_row["upload_time"], dic_row["address"], dic_row["price"],
+                                   str(dic_row["link"]), dic_row["img_link"]])
+        except:
+            pass
+
     # print(result)
-    return result
+
 
 def get_joongna_chart(keyword, db):
     global result
-    doc_ref = db.collection(u'99con').document(u'joongna_chart').collection(u'' + keyword).document(
-        u'last_number')
-    docs = doc_ref.get()
-    dic_number = docs.to_dict()
-    joongna_last_number = dic_number["number"]
-    print(joongna_last_number)
-    result = []
-    for i in range(joongna_last_number-1, joongna_last_number-25, -1):
-        print("중나 슈웃~")
+    try:
         doc_ref = db.collection(u'99con').document(u'joongna_chart').collection(u'' + keyword).document(
-            u'' + str(i))
+            u'last_number')
         docs = doc_ref.get()
-        dic_row = docs.to_dict()
-        result.append(
-            [dic_row["id"], dic_row["platform"], pattern.sub(r"", dic_row["name"]), dic_row["upload_time"], dic_row["address"], dic_row["price"],
-                               str(dic_row["link"]), dic_row["img_link"]])
+        dic_number = docs.to_dict()
+        joongna_last_number = dic_number["number"]
+        print(joongna_last_number)
+        result = []
+    except:
+        return None
+    for i in range(joongna_last_number-1, joongna_last_number-25, -1):
+        try:
+            print("중나 슈웃~")
+            doc_ref = db.collection(u'99con').document(u'joongna_chart').collection(u'' + keyword).document(
+                u'' + str(i))
+            docs = doc_ref.get()
+            dic_row = docs.to_dict()
+            result.append(
+                [dic_row["id"], dic_row["platform"], pattern.sub(r"", dic_row["name"]), dic_row["upload_time"], dic_row["address"], dic_row["price"],
+                                   str(dic_row["link"]), dic_row["img_link"]])
+        except:
+            pass
 
 
 # def get_data(keyword, db):
@@ -385,7 +423,10 @@ def shut_chart(keyword,db):
 
     parsing_chart(keyword, db)
     all = get_chart_data(keyword, db)
-    all = del_iqr_time(all)
+    try:
+        all = del_iqr_time(all)
+    except:
+        print("del_iqr except")
     # print(result)
     print()
     print("time :", time.time() - start)
