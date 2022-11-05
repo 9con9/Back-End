@@ -3,6 +3,7 @@ import flask
 from firebase_admin import credentials
 from multiprocessing import Pool
 import dangn
+import firebase_category
 import joongna
 import bunjang
 import dangn_naver_chart
@@ -25,7 +26,7 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 app = Flask(__name__)
 CORS(app)
-categoly = ["디지털기기", "가구/인테리어", "유아용품", "스포츠/레저", "의류", "도서/티켓/문구", "악기", "반려동물", "미용", "콘솔게임"]
+categoly = ["디지털기기", "가구/인테리어", "유아용품", "스포츠/레저", "의류", "도서/티켓/문구", "반려동물", "미용", "콘솔게임"]
 
 
 @app.route('/search', methods=['GET'])
@@ -35,22 +36,23 @@ def startParsing():
     keywords = flask.request.args['value']
     keyword = str(keywords)
 
-    ###
-    spl = keyword.split()
-    list_spl = [k for k in spl]
-    naver_keyword_list = list_spl[1:]
-    naver_keyword = " ".join(naver_keyword_list)
-    ###
-
     for check in categoly:
         if keyword == check:
             parsing_list = []
             result_list = []
             # result_dangn = dangn_category.get_dangn(keyword)
-            # result_bunjang = bunjang_category.get_bunjang(keyword)
+            # result_bunjang = bunjang_catego  ry.get_bunjang(keyword)
             # result_joongna = joongna_category.get_joongna(keyword)
-            all = firebase_test.shut(keyword)
+            all = firebase_category.shut(keyword, db)
+            all = np.array(all)
             all = pd.DataFrame(all)
+
+            second = all[all[3].str.contains('초')]
+            second[3] = second[3].replace(r'[^0-9]', '', regex=True)
+            second[3] = pd.to_numeric(second[3])
+            second.sort_values(by=[3], ascending=True, inplace=True)
+            second[3] = second[3].map('{}초 전'.format)
+            second = second.to_numpy()
 
             minute = all[all[3].str.contains('분')]
             minute[3] = minute[3].replace(r'[^0-9]', '', regex=True)
@@ -80,16 +82,22 @@ def startParsing():
             month[3] = month[3].map('{}달 전'.format)
             month = month.to_numpy()
 
-            all = np.concatenate((minute, hour, day, month))
+            all = np.concatenate((second, minute, hour, day, month))
             parsing_list = list(all)
 
             for parsing in parsing_list:
                 results = {"index": parsing[0], "platform": parsing[1], "name": parsing[2], "time": parsing[3],
                            "place": parsing[4],
-                           "price": parsing[5], "link": parsing[6], "img_link": parsing[7], "outlier": parsing[8]}
+                           "price": parsing[5], "link": parsing[6], "img_link": parsing[7]}
                 result_list.append(results)
             break
     else:
+        ###
+        spl = keyword.split()
+        list_spl = [k for k in spl]
+        naver_keyword_list = list_spl[1:]
+        naver_keyword = " ".join(naver_keyword_list)
+        ###
         # cred = credentials.Certificate("../../con-635db-firebase-adminsdk-ki86d-a3e7d8b4ac.json")
         # firebase_admin.initialize_app(cred)
         # db = firestore.client()

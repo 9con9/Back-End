@@ -61,6 +61,7 @@ def parsing(keyword, db):
     b_class = dan(db, keyword)
     c_class = joo(db, keyword)
 
+
     a_class.do_start()
     b_class.do_start()
     c_class.do_start()
@@ -191,9 +192,9 @@ def iqr():
         else:
             result[i].append('normal')
 
-    col = ["id", "platform", "name", "upload_time", "address", "price", "link", "img_link", "iqr"]
-    df = pd.DataFrame(result, columns=col)
-    df = df[["price", "iqr"]]
+    # col = ["id", "platform", "name", "upload_time", "address", "price", "link", "img_link", "iqr"]
+    # df = pd.DataFrame(result, columns=col)
+    # df = df[["price", "iqr"]]
     return result
 
 # if __name__ == "__main__":
@@ -208,7 +209,7 @@ def shut(keyword,db):
 
     parsing(keyword, db)
     all = get_data(keyword, db)
-    print(result)
+    # print(result)
     print()
     print("time :", time.time() - start)
     return all
