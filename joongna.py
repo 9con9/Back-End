@@ -17,28 +17,11 @@ import chromedriver_autoinstaller
 # firebase_admin.initialize_app(cred)
 #
 # db = firestore.client()
-def geocoding(address):
-    geolocoder = Nominatim(user_agent = 'South Korea', timeout=None)
-    geo = geolocoder.geocode(address)
-    crd = {"lat": str(geo.latitude), "lng": str(geo.longitude)}
-
-    return crd
 
 def get_joongna(search_keyword, db):
     try:
         result = []
-        ###
-        spl = search_keyword.split()
-        list_spl = [k for k in spl]
-        location_temp = list_spl[0:1]
-        joongna_keyword_temp = list_spl[1:]
-        location = " ".join(location_temp)
-        joongna_keyword = " ".join(joongna_keyword_temp)
-        ###
 
-        crd = geocoding(location)
-        lat = crd['lat']
-        lon = crd['lng']
 
         options = webdriver.ChromeOptions()
         options.add_argument('--window-size=1920x1080')
@@ -51,8 +34,9 @@ def get_joongna(search_keyword, db):
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
         path = '/usr/bin/chromedriver'
-        driver = webdriver.Chrome(path, options=options)
-        driver.get('https://web.joongna.com/search?keyword=' + joongna_keyword + '&lat=' + lat + '&lon=' + lon + '&page=1')
+        # driver = webdriver.Chrome(path, options=options)
+        driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
+        driver.get('https://web.joongna.com/search?keyword=' +search_keyword)
         driver.implicitly_wait(3)
         sleep(3)
 
