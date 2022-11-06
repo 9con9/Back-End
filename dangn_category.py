@@ -46,7 +46,9 @@ def get_dangn(keyword, db):
 
         path = '/usr/bin/chromedriver'
         driver = webdriver.Chrome(path, options=options)
+        # driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
         driver.implicitly_wait(time_to_wait=5)
+
 
 
         # 변수 초기화

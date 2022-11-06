@@ -22,6 +22,7 @@ def get_bunjang(search_keyword, db):
 
         path = '/usr/bin/chromedriver'
         driver = webdriver.Chrome(path, options=options)
+        # driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
         driver.implicitly_wait(3)
 
         temp_list = []
