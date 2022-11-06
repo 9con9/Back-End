@@ -1,14 +1,4 @@
-import firebase_admin
 import flask
-from firebase_admin import credentials
-from multiprocessing import Pool
-import dangn
-import joongna
-import bunjang
-import dangn_naver_chart
-import dangn_category
-import joongna_category
-import bunjang_category
 import numpy as np
 import pandas as pd
 from flask import Flask 
@@ -44,6 +34,8 @@ def startParsing():
             # result_bunjang = bunjang_category.get_bunjang(keyword)
             # result_joongna = joongna_category.get_joongna(keyword)
             all = firebase_category.shut(keyword,db)
+            for i in range(len(all)):
+                all[i][5] = format(int(all[i][5]), ',')
             all = np.array(all)
             all = pd.DataFrame(all)
             try:
@@ -101,6 +93,8 @@ def startParsing():
         # result_bunjang = bunjang_category.get_bunjang(keyword)
         # result_joongna = joongna_category.get_joongna(keyword)
         all = firebase_test.shut(keyword,db)
+        for i in range(len(all)):
+            all[i][5] = format(int(all[i][5]), ',')
         all = np.array(all)
         all = pd.DataFrame(all)
 
