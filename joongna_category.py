@@ -37,6 +37,7 @@ def get_joongna(search_keyword, db):
 
         path = '/usr/bin/chromedriver'
         driver = webdriver.Chrome(path, options=options)
+        # driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options)
         driver.get('https://web.joongna.com/search?category=' + str(categoly_number[-1]) + '&page=1')
         driver.implicitly_wait(3)
         sleep(3)
