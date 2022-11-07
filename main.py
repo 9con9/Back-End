@@ -33,12 +33,13 @@ def startParsing():
             # result_dangn = dangn_category.get_dangn(keyword)
             # result_bunjang = bunjang_category.get_bunjang(keyword)
             # result_joongna = joongna_category.get_joongna(keyword)
-            all = firebase_category.shut(keyword,db)
-            for i in range(len(all)):
-                all[i][5] = format(int(all[i][5]), ',')
-            all = np.array(all)
-            all = pd.DataFrame(all)
             try:
+                all = firebase_category.shut(keyword,db)
+                for i in range(len(all)):
+                    all[i][5] = format(int(all[i][5]), ',')
+                all = np.array(all)
+                all = pd.DataFrame(all)
+
                 second = all[all[3].str.contains('초')]
                 second[3] = second[3].replace(r'[^0-9]', '', regex=True)
                 second[3] = pd.to_numeric(second[3])
@@ -92,13 +93,14 @@ def startParsing():
         # result_dangn = dangn_category.get_dangn(keyword)
         # result_bunjang = bunjang_category.get_bunjang(keyword)
         # result_joongna = joongna_category.get_joongna(keyword)
-        all = firebase_test.shut(keyword,db)
-        for i in range(len(all)):
-            all[i][5] = format(int(all[i][5]), ',')
-        all = np.array(all)
-        all = pd.DataFrame(all)
-
         try:
+            all = firebase_test.shut(keyword,db)
+            for i in range(len(all)):
+                all[i][5] = format(int(all[i][5]), ',')
+            all = np.array(all)
+            all = pd.DataFrame(all)
+
+
             minute = all[all[3].str.contains('분')]
             minute[3] = minute[3].replace(r'[^0-9]', '', regex=True)
             minute[3] = pd.to_numeric(minute[3])
@@ -139,33 +141,34 @@ def startParsing():
             print("search main except")
     try:
         print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
-        return str(result_list)
+        return result_list
     except:
-        return None
+        return []
 
 
 @app.route('/chart', methods=['GET'])
 def startParsing_chart():
-    start = time.time()  # 시작 시간 저장
-
-    keywords = flask.request.args['value']
-    keyword = str(keywords)
-
-    ###
-    spl = keyword.split()
-    list_spl = [k for k in spl]
-    naver_keyword_list = list_spl[1:]
-    naver_keyword = " ".join(naver_keyword_list)
-    ###
-
-    chart_result = []
-    result_dict = {}
-
-    # results = dangn_naver_chart.get_data(keyword)
-    results = firebase_test.shut_chart(keyword,db)
-
-    # for result in results:
     try:
+        start = time.time()  # 시작 시간 저장
+
+        keywords = flask.request.args['value']
+        keyword = str(keywords)
+
+        ###
+        spl = keyword.split()
+        list_spl = [k for k in spl]
+        naver_keyword_list = list_spl[1:]
+        naver_keyword = " ".join(naver_keyword_list)
+        ###
+
+        chart_result = []
+        result_dict = {}
+
+        # results = dangn_naver_chart.get_data(keyword)
+        results = firebase_test.shut_chart(keyword,db)
+
+        # for result in results:
+
         result_np = np.array(results)
         result_df = pd.DataFrame(result_np)
         result_df.columns = ['index', 'platform', 'name', 'time', 'place', 'price', 'link', 'img_link', 'outlier']
@@ -422,7 +425,7 @@ def startParsing_chart():
         print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
         return result_dict
     except:
-        return None
+        return {}
 
 
 if __name__ == '__main__':

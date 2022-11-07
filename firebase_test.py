@@ -391,56 +391,63 @@ def get_chart_data(keyword, db):
 
 def iqr():
     global result
-    pd.set_option('display.max_rows', None)
-    col = ["id", "platform", "name", "upload_time", "address", "price", "link", "img_link"]
+    try:
+        pd.set_option('display.max_rows', None)
+        col = ["id", "platform", "name", "upload_time", "address", "price", "link", "img_link"]
 
-    df = pd.DataFrame(result, columns=col)
+        df = pd.DataFrame(result, columns=col)
 
-    temp_list = list(df["price"])
-    np_temp = np.array(temp_list, dtype=np.int64)
-    pd_temp = pd.Series(np_temp)
-    Q3 = pd_temp.quantile(.75)
-    Q1 = pd_temp.quantile(.25)
-    Q2 = pd_temp.quantile(.5)
-    IQR = Q3 - Q1
-    if IQR > Q2:
-        low_np = list(np_temp[Q1 > np_temp])
-        high_np = list(np_temp[Q3 < np_temp])
-    else:
-        low_np = list(np_temp[Q1 - 0.2 * IQR > np_temp])
-        high_np = list(np_temp[Q3 + 0.4 * IQR < np_temp])
-
-    for i in range(len(result)):
-        if int(result[i][5]) in low_np:
-            result[i].append("low")
-        elif int(result[i][5]) in high_np:
-            result[i].append('high')
+        temp_list = list(df["price"])
+        np_temp = np.array(temp_list, dtype=np.int64)
+        pd_temp = pd.Series(np_temp)
+        Q3 = pd_temp.quantile(.75)
+        Q1 = pd_temp.quantile(.25)
+        Q2 = pd_temp.quantile(.5)
+        IQR = Q3 - Q1
+        if IQR > Q2:
+            low_np = list(np_temp[Q1 > np_temp])
+            high_np = list(np_temp[Q3 < np_temp])
         else:
-            result[i].append('normal')
+            low_np = list(np_temp[Q1 - 0.2 * IQR > np_temp])
+            high_np = list(np_temp[Q3 + 0.4 * IQR < np_temp])
 
-    # col = ["id", "platform", "name", "upload_time", "address", "price", "link", "img_link", "iqr"]
-    # df = pd.DataFrame(result, columns=col)
-    # df = df[["price", "iqr"]]
-    return result
+        for i in range(len(result)):
+            if int(result[i][5]) in low_np:
+                result[i].append("low")
+            elif int(result[i][5]) in high_np:
+                result[i].append('high')
+            else:
+                result[i].append('normal')
+
+        # col = ["id", "platform", "name", "upload_time", "address", "price", "link", "img_link", "iqr"]
+        # df = pd.DataFrame(result, columns=col)
+        # df = df[["price", "iqr"]]
+        return result
+    except:
+        print("iqr except")
+        return None
 
 def del_iqr_time(all):
-    
-    all_df = pd.DataFrame(all)
-    low_index = all_df[all_df[8].str.contains('low')].index
-    high_index = all_df[all_df[8].str.contains('high')].index
-    normal_df = all_df.drop(low_index)
-    normal_df = normal_df.drop(high_index)
-    
-    year_index = normal_df[normal_df[3].str.contains('년')].index
-    month_index = normal_df[normal_df[3].str.contains('달')].index
-    week_index = normal_df[normal_df[3].str.contains('주')].index
-    normal_df = normal_df.drop(year_index)
-    normal_df = normal_df.drop(month_index)
-    normal_df = normal_df.drop(week_index)
-    
-    result = normal_df.values.tolist()
-    
-    return result
+    try:
+        all_df = pd.DataFrame(all)
+        low_index = all_df[all_df[8].str.contains('low')].index
+        high_index = all_df[all_df[8].str.contains('high')].index
+        normal_df = all_df.drop(low_index)
+        normal_df = normal_df.drop(high_index)
+
+        year_index = normal_df[normal_df[3].str.contains('년')].index
+        month_index = normal_df[normal_df[3].str.contains('달')].index
+        week_index = normal_df[normal_df[3].str.contains('주')].index
+        normal_df = normal_df.drop(year_index)
+        normal_df = normal_df.drop(month_index)
+        normal_df = normal_df.drop(week_index)
+
+        result = normal_df.values.tolist()
+
+        return result
+    except:
+        print("del_iqr_time except")
+        return None
 
 # if __name__ == "__main__":
 def shut(keyword,db):
